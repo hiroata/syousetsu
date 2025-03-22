@@ -4,6 +4,10 @@ import os
 import markdown
 import re
 from io import BytesIO
+from dotenv import load_dotenv
+
+# 環境変数の読み込み
+load_dotenv()
 
 app = Flask(__name__)
 app.secret_key = 'your-secret-key-here'  # 任意のシークレットキーを設定
