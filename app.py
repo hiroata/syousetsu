@@ -9,8 +9,8 @@ app = Flask(__name__)
 app.secret_key = 'your-secret-key-here'  # 任意のシークレットキーを設定
 app.config['SEND_FILE_MAX_AGE_DEFAULT'] = 0
 
-# xAI APIキー
-api_key = os.getenv('XAI_API_KEY')
+# OpenAI APIキー
+api_key = os.getenv('OPENAI_API_KEY')
 
 # ホーム画面
 @app.route('/')
@@ -28,8 +28,8 @@ def assist_plot():
     
     # APIリクエスト
     headers = {"Authorization": f"Bearer {api_key}", "Content-Type": "application/json"}
-    data = {"model": "grok-2-1212", "messages": [{"role": "user", "content": prompt}], "max_tokens": 300}
-    response = requests.post("https://api.x.ai/v1/chat/completions", headers=headers, json=data)
+    data = {"model": "gpt-4", "messages": [{"role": "user", "content": prompt}], "max_tokens": 300}
+    response = requests.post("https://api.openai.com/v1/chat/completions", headers=headers, json=data)
     
     if response.status_code == 200:
         ideas = response.json().get("choices", [{}])[0].get("message", {}).get("content", "アイデアを生成できませんでした")
@@ -68,8 +68,8 @@ def generate():
 
     # APIリクエスト
     headers = {"Authorization": f"Bearer {api_key}", "Content-Type": "application/json"}
-    data = {"model": "grok-2-1212", "messages": [{"role": "user", "content": full_prompt}], "max_tokens": 700}
-    response = requests.post("https://api.x.ai/v1/chat/completions", headers=headers, json=data)
+    data = {"model": "gpt-4", "messages": [{"role": "user", "content": full_prompt}], "max_tokens": 700}
+    response = requests.post("https://api.openai.com/v1/chat/completions", headers=headers, json=data)
 
     if response.status_code == 200:
         novel_text = response.json().get("choices", [{}])[0].get("message", {}).get("content", "テキストが見つかりませんでした")
@@ -141,12 +141,12 @@ def continue_story():
         # APIリクエスト - トークン数を増やす
         headers = {"Authorization": f"Bearer {api_key}", "Content-Type": "application/json"}
         data = {
-            "model": "grok-2-1212", 
-            "messages": [{"role": "user", "content": full_prompt}], 
+            "model": "gpt-4",
+            "messages": [{"role": "user", "content": full_prompt}],
             "max_tokens": 1000,  # トークン数を増やす
             "temperature": 0.7   # 創造性のパラメータを少し上げる
         }
-        response = requests.post("https://api.x.ai/v1/chat/completions", headers=headers, json=data)
+        response = requests.post("https://api.openai.com/v1/chat/completions", headers=headers, json=data)
 
         if response.status_code == 200:
             # 新しいテキストだけを取得（前の内容を引き継がないようにする）
