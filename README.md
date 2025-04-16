@@ -158,3 +158,9 @@ MIT
 ## 📞 連絡先
 
 質問や提案がある場合は、[Issues](https://github.com/[your-username]/syousetsu/issues) に投稿してください。
+
+## 📚 デモ
+
+[GitHub Pages版](https://[your-username].github.io/syousetsu/?debug=true)でブラウザから直接お試しいただけます。
+
+デモモードではAPIキーなしで基本機能を体験できます。実際のAI生成には各サービスのAPIキーが必要です。
