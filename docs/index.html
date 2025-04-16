@@ -1,0 +1,106 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>小説生成ツール</title>
+    <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+    <div class="container">
+        <h1>小説生成ツール</h1>
+        <form id="novelGenerationForm">
+            <label for="genre">ジャンルを選択:</label>
+            <select id="genre" name="genre">
+                <option value="ファンタジー">ファンタジー</option>
+                <option value="恋愛">恋愛</option>
+                <option value="ミステリー">ミステリー</option>
+                <option value="SF">SF</option>
+                <option value="ホラー">ホラー</option>
+                <option value="歴史">歴史</option>
+            </select>
+
+            <label for="model_choice">使用するAIモデル:</label>
+            <div class="model-group">
+                <h3>xAI</h3>
+                <div class="model-option">
+                    <input type="radio" id="model_xai" name="model_choice" value="xai" checked>
+                    <label for="model_xai" class="model-description">
+                        Grok-3 (Beta)
+                        <div class="model-features">最新モデル・13万トークンコンテキスト・高度な推論能力</div>
+                    </label>
+                </div>
+            </div>
+            
+            <div class="model-group">
+                <h3>Google</h3>
+                <div class="model-option">
+                    <input type="radio" id="model_gemini" name="model_choice" value="gemini">
+                    <label for="model_gemini" class="model-description">
+                        Gemini 2.5 Pro
+                        <div class="model-features">104万トークンコンテキスト・画像理解・思考機能搭載</div>
+                    </label>
+                </div>
+            </div>
+            
+            <div class="model-group">
+                <h3>その他</h3>
+                <div class="model-option">
+                    <input type="radio" id="model_anthropic" name="model_choice" value="anthropic">
+                    <label for="model_anthropic" class="model-description">
+                        Claude 3.5 Sonnet
+                        <div class="model-features">高品質テキスト生成・安全性・創造性のバランス</div>
+                    </label>
+                </div>
+                <div class="model-option">
+                    <input type="radio" id="model_openai" name="model_choice" value="openai">
+                    <label for="model_openai" class="model-description">
+                        GPT-4 Turbo
+                        <div class="model-features">高い応答精度・広範な知識ベース</div>
+                    </label>
+                </div>
+            </div>
+            
+            <div class="idea-generator">
+                <h3>アイデアが思いつかない？</h3>
+                <p>選択したジャンルに基づいて、ストーリーのアイデアを自動生成できます。</p>
+                <button type="button" id="generateIdeasBtn">アイデアを生成</button>
+                <div id="spinner" class="spinner"></div>
+                <div id="ideas-container" class="ideas-container"></div>
+            </div>
+
+            <label for="prompt">お題を入力してください:</label>
+            <input type="text" id="prompt" name="prompt" placeholder="例: 魔法学校で友情を育む物語" required>
+
+            <label for="instructions">詳細な指示（オプション）:</label>
+            <textarea id="instructions" name="instructions" placeholder="例: 舞台設定、世界観、時代背景などの詳細"></textarea>
+
+            <label for="story_request">ストーリー展開のリクエスト（オプション）:</label>
+            <textarea id="story_request" name="story_request" placeholder="例: 主人公の成長や、物語の転換点について"></textarea>
+
+            <label for="font_choice">表示スタイル:</label>
+            <select id="font_choice" name="font_choice">
+                <option value="sans">標準</option>
+                <option value="serif">文学的</option>
+            </select>
+
+            <div class="character-form">
+                <h3>キャラクターを追加</h3>
+                <label for="character_name">名前:</label>
+                <input type="text" id="character_name" name="character_name" placeholder="例: 山田太郎">
+                <label for="character_description">説明:</label>
+                <textarea id="character_description" name="character_description" placeholder="例: 16歳、高校生、内向的だが正義感が強い"></textarea>
+            </div>
+
+            <button type="submit" class="submit-btn">物語を生成</button>
+        </form>
+    </div>
+
+    <!-- APIクライアントライブラリ -->
+    <script src="js/api-client.js"></script>
+    <!-- ストーリー管理ライブラリ -->
+    <script src="js/story-manager.js"></script>
+    <!-- メインアプリケーションロジック -->
+    <script src="js/app.js"></script>
+</body>
+</html>
