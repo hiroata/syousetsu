@@ -1,0 +1,200 @@
+{% extends "layout.html" %}
+{% block title %}{% if is_new %}新規キャラクター作成{% else %}キャラクター編集{% endif %}{% endblock %}
+
+{% block content %}
+<div class="container">
+    <h1 class="mb-4">{% if is_new %}新規キャラクター作成{% else %}「{{ character.name }}」を編集{% endif %}</h1>
+    
+    <div class="row mb-4">
+        <div class="col">
+            <a href="/characters" class="btn btn-secondary">キャラクターギャラリーに戻る</a>
+        </div>
+    </div>
+    
+    <form method="POST" action="/characters/save">
+        {% if not is_new %}
+            <input type="hidden" name="id" value="{{ character.id }}">
+        {% endif %}
+        
+        <div class="row">
+            <div class="col-md-6">
+                <div class="card mb-4">
+                    <div class="card-header">
+                        <h5>基本情報</h5>
+                    </div>
+                    <div class="card-body">
+                        <div class="mb-3">
+                            <label for="name" class="form-label">名前 <span class="text-danger">*</span></label>
+                            <input type="text" class="form-control" id="name" name="name" 
+                                   value="{{ character.name }}" required>
+                        </div>
+                        
+                        <div class="mb-3">
+                            <label for="gender" class="form-label">性別</label>
+                            <select class="form-select" id="gender" name="gender">
+                                <option value="female" {% if character.gender == 'female' %}selected{% endif %}>女性</option>
+                                <option value="male" {% if character.gender == 'male' %}selected{% endif %}>男性</option>
+                            </select>
+                        </div>
+                        
+                        <div class="mb-3">
+                            <label for="age" class="form-label">年齢</label>
+                            <input type="number" class="form-control" id="age" name="age" 
+                                   min="18" max="100" value="{{ character.age }}">
+                        </div>
+                        
+                        <div class="mb-3">
+                            <label for="occupation" class="form-label">職業</label>
+                            <input type="text" class="form-control" id="occupation" name="occupation" 
+                                   value="{{ character.occupation }}">
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="card mb-4">
+                    <div class="card-header">
+                        <h5>外見・性格</h5>
+                    </div>
+                    <div class="card-body">
+                        <div class="mb-3">
+                            <label for="appearance" class="form-label">外見</label>
+                            <textarea class="form-control" id="appearance" name="appearance" 
+                                      rows="3">{{ character.appearance }}</textarea>
+                        </div>
+                        
+                        <div class="mb-3">
+                            <label for="personality" class="form-label">性格</label>
+                            <textarea class="form-control" id="personality" name="personality" 
+                                      rows="3">{{ character.personality }}</textarea>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="col-md-6">
+                <div class="card mb-4">
+                    <div class="card-header">
+                        <h5>詳細設定</h5>
+                    </div>
+                    <div class="card-body">
+                        <div class="mb-3">
+                            <label for="speech_pattern" class="form-label">話し方の特徴</label>
+                            <textarea class="form-control" id="speech_pattern" name="speech_pattern" 
+                                      rows="2">{{ character.speech_pattern }}</textarea>
+                        </div>
+                        
+                        <div class="mb-3">
+                            <label for="background" class="form-label">背景・経歴</label>
+                            <textarea class="form-control" id="background" name="background" 
+                                      rows="3">{{ character.background }}</textarea>
+                        </div>
+                        
+                        <div class="mb-3">
+                            <label for="kinks" class="form-label">性癖・特徴</label>
+                            <textarea class="form-control" id="kinks" name="kinks" 
+                                      rows="2">{{ character.kinks }}</textarea>
+                            <div class="form-text">カンマ区切りで複数入力できます（例: 受け身、甘えん坊）</div>
+                        </div>
+                        
+                        <div class="mb-3">
+                            <label for="tags" class="form-label">タグ</label>
+                            <input type="text" class="form-control" id="tags" name="tags" 
+                                   value="{{ character.tags }}">
+                            <div class="form-text">カンマ区切りでタグを入力（例: ツンデレ, 眼鏡）</div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="card mb-4">
+                    <div class="card-header d-flex justify-content-between align-items-center">
+                        <h5 class="mb-0">ランダム生成</h5>
+                        <button type="button" class="btn btn-sm btn-outline-primary" 
+                                onclick="generateRandom()">全体を生成</button>
+                    </div>
+                    <div class="card-body">
+                        <div class="d-flex mb-2">
+                            <span>個別要素を生成：</span>
+                            <div class="ms-2">
+                                <button type="button" class="btn btn-sm btn-outline-secondary" 
+                                        onclick="generateRandomField('appearance')">外見</button>
+                                <button type="button" class="btn btn-sm btn-outline-secondary" 
+                                        onclick="generateRandomField('personality')">性格</button>
+                                <button type="button" class="btn btn-sm btn-outline-secondary" 
+                                        onclick="generateRandomField('speech_pattern')">話し方</button>
+                                <button type="button" class="btn btn-sm btn-outline-secondary" 
+                                        onclick="generateRandomField('kinks')">性癖</button>
+                            </div>
+                        </div>
+                        <div class="form-text">※ランダム生成を使用すると、現在の入力内容が上書きされます。</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="row">
+            <div class="col">
+                <button type="submit" class="btn btn-primary">保存</button>
+                <a href="/characters" class="btn btn-outline-secondary">キャンセル</a>
+            </div>
+        </div>
+    </form>
+</div>
+
+<script>
+    // ランダム生成関数
+    function generateRandom() {
+        const gender = document.getElementById('gender').value;
+        
+        fetch('/characters/generate_random', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({ gender: gender })
+        })
+        .then(response => response.json())
+        .then(data => {
+            // 各フィールドに値を設定
+            document.getElementById('occupation').value = data.occupation || '';
+            document.getElementById('age').value = data.age || '';
+            document.getElementById('appearance').value = data.appearance || '';
+            document.getElementById('personality').value = data.personality || '';
+            document.getElementById('speech_pattern').value = data.speech_pattern || '';
+            document.getElementById('kinks').value = data.kinks || '';
+        })
+        .catch(error => {
+            console.error('Error generating random character:', error);
+            alert('ランダム生成中にエラーが発生しました。');
+        });
+    }
+    
+    // 特定フィールドのみランダム生成
+    function generateRandomField(field) {
+        const gender = document.getElementById('gender').value;
+        
+        fetch('/characters/generate_random', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({ gender: gender })
+        })
+        .then(response => response.json())
+        .then(data => {
+            // 指定されたフィールドのみ更新
+            if (data[field]) {
+                document.getElementById(field).value = data[field];
+            }
+        })
+        .catch(error => {
+            console.error('Error generating random field:', error);
+            alert('ランダム生成中にエラーが発生しました。');
+        });
+    }
+    
+    // 性別変更時に関連フィールドを更新
+    document.getElementById('gender').addEventListener('change', function() {
+        // 性別に依存するフィールドがあれば自動更新
+    });
+</script>
+{% endblock %}

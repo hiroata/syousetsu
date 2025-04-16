@@ -3,250 +3,1010 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>小説生成ツール</title>
+    <title>官能小説生成ツール</title>
     <style>
-        body { 
+        body {
             font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
-            line-height: 1.6; 
-            margin: 0; 
-            padding: 20px; 
-            background-color: #f0f2f5; 
+            line-height: 1.6;
+            margin: 0;
+            padding: 20px;
+            background-color: #f0f2f5;
         }
-        h1 { 
-            color: #333; 
-            text-align: center; 
-            border-bottom: 2px solid #007bff; 
-            padding-bottom: 10px; 
-            margin-bottom: 30px; 
+        h1 {
+            color: #333;
+            text-align: center;
+            border-bottom: 2px solid #e91e63;
+            padding-bottom: 10px;
+            margin-bottom: 30px;
         }
-        .container { 
-            max-width: 800px; 
-            margin: 0 auto; 
-            background-color: white; 
-            padding: 30px; 
-            border-radius: 8px; 
-            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1); 
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+            background-color: white;
+            padding: 30px;
+            border-radius: 8px;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
         }
-        label { 
-            font-weight: bold; 
-            color: #555; 
-            display: block; 
-            margin-bottom: 5px; 
+        label {
+            font-weight: bold;
+            color: #555;
+            display: block;
+            margin-bottom: 5px;
         }
-        input[type="text"], textarea, select { 
-            width: 100%; 
-            padding: 10px; 
-            margin-bottom: 20px; 
-            border: 1px solid #ddd; 
-            border-radius: 5px; 
-            box-sizing: border-box; 
-            font-size: 16px; 
+        input[type="text"], textarea, select {
+            width: 100%;
+            padding: 10px;
+            margin-bottom: 20px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            box-sizing: border-box;
+            font-size: 16px;
         }
-        textarea { 
-            resize: vertical; 
-            min-height: 150px; 
+        textarea {
+            resize: vertical;
+            min-height: 150px;
         }
-        button, input[type="submit"] { 
-            background-color: #007bff; 
-            color: white; 
-            padding: 12px 20px; 
-            border: none; 
-            border-radius: 5px; 
-            cursor: pointer; 
-            font-size: 16px; 
+        button, input[type="submit"] {
+            background-color: #e91e63;
+            color: white;
+            padding: 12px 20px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 16px;
             transition: background-color 0.3s;
         }
-        button:hover, input[type="submit"]:hover { 
-            background-color: #0056b3; 
+        button:hover, input[type="submit"]:hover {
+            background-color: #c2185b;
         }
-        .character-form { 
-            margin-top: 20px; 
-            padding: 15px; 
-            border: 1px solid #ddd; 
-            border-radius: 5px;
-            background-color: #f9f9f9;
+        .btn-close {
+            box-sizing: content-box;
+            width: 1em;
+            height: 1em;
+            padding: .25em .25em;
+            color: #000;
+            background: transparent url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16' fill='%23000'%3e%3cpath d='M.293.293a1 1 0 0 1 1.414 0L8 6.586 14.293.293a1 1 0 1 1 1.414 1.414L9.414 8l6.293 6.293a1 1 0 0 1-1.414 1.414L8 9.414l-6.293 6.293a1 1 0 0 1-1.414-1.414L6.586 8 .293 1.707a1 1 0 0 1 0-1.414z'/%3e%3c/svg%3e") center/1em auto no-repeat;
+            border: 0;
+            border-radius: .25rem;
+            opacity: .5;
+            cursor: pointer;
         }
-        .character-form h3 {
-            margin-top: 0;
-            color: #444;
+        .btn-close:hover {
+            opacity: .75;
         }
-        .idea-generator {
+        .alert-dismissible .btn-close {
+            position: absolute;
+            top: 0;
+            right: 0;
+            z-index: 2;
+            padding: 1.25rem 1rem;
+        }
+        .fade {
+            transition: opacity .15s linear;
+        }
+        .show {
+            opacity: 1;
+        }
+        .alert {
+            position: relative;
+            padding: 1rem 1rem;
+            margin-bottom: 1rem;
+            border: 1px solid transparent;
+            border-radius: .25rem;
+        }
+        .options-toggle {
+            background-color: #f5f5f5;
+            border: 1px solid #ddd;
+            padding: 10px 15px;
             margin-bottom: 20px;
+            border-radius: 5px;
+            cursor: pointer;
+            font-weight: bold;
+        }
+        .options-content {
+            display: none;
             padding: 15px;
             border: 1px solid #ddd;
             border-radius: 5px;
-            background-color: #f0f8ff;
-        }
-        .ideas-container {
-            display: none;
-            margin-top: 15px;
-            padding: 10px;
-            border: 1px solid #ccc;
-            border-radius: 5px;
-            background-color: #fff;
-        }
-        .idea-item {
-            margin-bottom: 10px;
-            padding-bottom: 10px;
-            border-bottom: 1px solid #eee;
-        }
-        .idea-select {
-            background-color: #28a745;
-            margin-top: 5px;
-            padding: 5px 10px;
-            font-size: 14px;
+            background-color: #f9f9f9;
+            margin-bottom: 20px;
         }
         .spinner {
             display: none;
             width: 30px;
             height: 30px;
             border: 3px solid #f3f3f3;
-            border-top: 3px solid #3498db;
+            border-top: 3px solid #e91e63;
             border-radius: 50%;
             animation: spin 1s linear infinite;
-            margin: 10px auto;
+        }
+        .template-list {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 15px;
+            margin-bottom: 20px;
+        }
+        .template-card {
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            padding: 15px;
+            cursor: pointer;
+            transition: all 0.2s;
+            background-color: #fff;
+        }
+        .template-card:hover {
+            border-color: #e91e63;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+        }
+        .template-card h3 {
+            margin-top: 0;
+            margin-bottom: 5px;
+            color: #e91e63;
+            font-size: 1.1em;
+        }
+        .template-card p {
+            margin-bottom: 0;
+            font-size: 14px;
+            color: #666;
+        }
+        .options-section {
+            margin-bottom: 25px;
+            padding-bottom: 20px;
+            border-bottom: 1px solid #eee;
+        }
+        .options-section:last-child {
+            border-bottom: none;
+        }
+        .structure-list {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 10px;
+            margin: 10px 0;
+        }
+        .structure-card {
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            padding: 10px;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+        .structure-card:hover {
+            border-color: #e91e63;
+            background-color: #fff0f5;
+        }
+        .structure-card h4 {
+            margin-top: 0;
+            margin-bottom: 5px;
+            color: #e91e63;
+        }
+        .structure-card p {
+            margin-bottom: 0;
+            font-size: 14px;
+            color: #666;
+        }
+        .style-sample {
+            font-style: italic;
+            margin-top: 10px;
+            padding: 10px;
+            background-color: #f9f9f9;
+            border-left: 3px solid #e91e63;
+            font-size: 13px;
+        }
+        .sample-text {
+            background-color: #f8f9fa;
+            border-left: 3px solid #e91e63;
+            padding: 15px;
+            margin: 10px 0;
+            font-style: italic;
+            border-radius: 3px;
+        }
+        .structure-card.selectable {
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+        .structure-card.selectable:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+        }
+        .structure-card.selected {
+            border: 2px solid #e91e63;
+            background-color: #fff0f5;
+        }
+        .character-row {
+            display: flex;
+            gap: 20px;
+            margin-bottom: 20px;
+        }
+        .character-column {
+            flex: 1;
+            background-color: #f9f9f9;
+            padding: 20px;
+            border-radius: 5px;
+            border: 1px solid #eee;
+        }
+        .kink-selection {
+            margin: 15px 0;
+        }
+        .kink-buttons {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+            margin-bottom: 10px;
+        }
+        .kink-btn {
+            background-color: #f0f0f0;
+            border: 1px solid #ddd;
+            border-radius: 15px;
+            padding: 5px 12px;
+            font-size: 13px;
+            cursor: pointer;
+            transition: all 0.2s;
+            color: #333;
+            line-height: 1.4;
+        }
+        .kink-btn:hover {
+            background-color: #e3f2fd;
+            border-color: #bbdefb;
+        }
+        .kink-btn.selected {
+            background-color: #e91e63;
+            color: white;
+            border-color: #c2185b;
+        }
+        .episode-settings {
+            margin-bottom: 20px;
+            padding: 15px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            background-color: #f9f9f9;
+        }
+        .episode-settings h3 {
+            margin-top: 0;
+            margin-bottom: 15px;
+            color: #e91e63;
+            font-size: 1.1em;
+        }
+        .episode-settings select {
+            margin-bottom: 15px;
+        }
+        .episode-settings label {
+            display: block;
+            margin-bottom: 5px;
+        }
+        .episode-settings .slider-value {
+            display: inline-block;
+            margin-left: 10px;
+            font-weight: bold;
+            min-width: 2em;
+            text-align: right;
+        }
+        .slider-container {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-bottom: 15px;
+        }
+        .slider-container label {
+            margin-bottom: 0;
+            flex-shrink: 0;
+        }
+        .slider-container input[type="range"] {
+            flex-grow: 1;
+            margin-bottom: 0;
+            padding: 0;
+        }
+        .add-episode-btn {
+            background-color: #6c757d;
+            color: white;
+            padding: 8px 15px;
+            font-size: 14px;
+            margin-top: 10px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: background-color 0.3s;
+        }
+        .add-episode-btn:hover {
+            background-color: #5a6268;
+        }
+        .alert-success {
+            color: #0f5132;
+            background-color: #d1e7dd;
+            border-color: #badbcc;
+        }
+        .alert-danger {
+            color: #842029;
+            background-color: #f8d7da;
+            border-color: #f5c2c7;
+        }
+        .alert-info {
+            color: #055160;
+            background-color: #cff4fc;
+            border-color: #b6effb;
         }
         @keyframes spin {
             0% { transform: rotate(0deg); }
             100% { transform: rotate(360deg); }
         }
+        .progress-bar {
+            width: 100%;
+            height: 10px;
+            background-color: #e9ecef;
+            border-radius: 5px;
+            margin: 15px 0 5px 0;
+            overflow: hidden;
+            display: none;
+        }
+        .progress-bar-inner {
+            height: 100%;
+            background-color: #e91e63;
+            width: 0%;
+            transition: width 0.3s ease-out;
+        }
+        .status-message {
+            font-size: 14px;
+            color: #6c757d;
+            margin: 5px 0 15px 0;
+            text-align: center;
+            display: none;
+            min-height: 1.2em;
+        }
+        @media (max-width: 768px) {
+            .container {
+                padding: 20px;
+            }
+            .character-row {
+                flex-direction: column;
+            }
+            .character-column {
+                margin-bottom: 15px;
+            }
+        }
     </style>
     <script>
-        function generateIdeas() {
-            const genre = document.getElementById('genre').value;
-            const spinner = document.getElementById('spinner');
-            const ideasContainer = document.getElementById('ideas-container');
+        // 性別が変更されたときに性癖リストを更新する関数
+        function updateKinksByGender(genderSelect, kinkContainerId, kinkInputId) {
+            const gender = genderSelect.value;
+            const kinkContainer = document.getElementById(kinkContainerId);
+            const kinkInput = document.getElementById(kinkInputId);
             
-            // スピナー表示
-            spinner.style.display = 'block';
-            ideasContainer.style.display = 'none';
-            
-            // APIリクエスト
-            fetch('/assist', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/x-www-form-urlencoded',
-                },
-                body: `genre=${encodeURIComponent(genre)}`
-            })
-            .then(response => response.json())
-            .then(data => {
-                spinner.style.display = 'none';
-                
-                if (data.success) {
-                    // アイデアを表示
-                    ideasContainer.innerHTML = data.ideas.replace(/\n/g, '<br>');
-                    ideasContainer.style.display = 'block';
+            if (!kinkContainer || !kinkInput) return;
+
+            // 選択されていた性癖を保存
+            const selectedKinks = Array.from(kinkContainer.querySelectorAll('.kink-btn.selected'))
+                .map(btn => btn.textContent.trim());
+
+            // APIから性癖リストを取得
+            fetch(`/api/character_kinks/${gender}`)
+                .then(response => response.json())
+                .then(kinks => {
+                    // コンテナをクリア
+                    kinkContainer.innerHTML = '';
                     
-                    // アイデアをクリックで入力欄に設定できるようにする
-                    const ideas = ideasContainer.innerHTML.split('<br><br>');
-                    ideasContainer.innerHTML = '';
-                    
-                    ideas.forEach((idea, index) => {
-                        if (idea.trim() === '') return;
+                    // 新しい性癖ボタンを追加
+                    kinks.forEach(kink => {
+                        const btn = document.createElement('button');
+                        btn.type = 'button';
+                        btn.className = 'kink-btn';
+                        // 以前選択されていたものは選択状態にする
+                        if (selectedKinks.includes(kink)) {
+                            btn.classList.add('selected');
+                        }
+                        btn.textContent = kink;
                         
-                        const ideaDiv = document.createElement('div');
-                        ideaDiv.className = 'idea-item';
-                        ideaDiv.innerHTML = idea + '<br>';
+                        // クリックイベントを設定
+                        btn.addEventListener('click', () => {
+                            toggleKink(btn, kinkInputId);
+                        });
                         
-                        const selectButton = document.createElement('button');
-                        selectButton.className = 'idea-select';
-                        selectButton.textContent = 'このアイデアを使用';
-                        selectButton.onclick = function() {
-                            // 正規表現でプロット概要を抽出
-                            const promptMatch = idea.match(/概要：(.*?)(?=登場人物|$)/s);
-                            const charsMatch = idea.match(/登場人物：(.*?)(?=舞台|$)/s);
-                            const settingMatch = idea.match(/舞台：(.*?)(?=$)/s);
-                            
-                            if (promptMatch) {
-                                document.getElementById('prompt').value = promptMatch[1].trim();
-                            }
-                            
-                            if (charsMatch) {
-                                const chars = charsMatch[1].trim().split('、');
-                                if (chars.length > 0 && chars[0]) {
-                                    document.getElementById('character_name').value = chars[0].split('：')[0] || '';
-                                    document.getElementById('character_description').value = chars[0].split('：')[1] || '';
-                                }
-                            }
-                            
-                            if (settingMatch) {
-                                document.getElementById('instructions').value = '舞台：' + settingMatch[1].trim();
-                            }
-                        };
-                        
-                        ideaDiv.appendChild(selectButton);
-                        ideasContainer.appendChild(ideaDiv);
+                        kinkContainer.appendChild(btn);
                     });
-                } else {
-                    ideasContainer.innerHTML = 'アイデア生成中にエラーが発生しました。';
-                    ideasContainer.style.display = 'block';
-                }
-            })
-            .catch(error => {
-                spinner.style.display = 'none';
-                ideasContainer.innerHTML = 'エラー: ' + error;
-                ideasContainer.style.display = 'block';
-            });
+
+                    // 選択済み性癖を入力フィールドに設定
+                    const newSelectedKinks = Array.from(kinkContainer.querySelectorAll('.kink-btn.selected'))
+                        .map(btn => btn.textContent.trim())
+                        .join('、');
+                    kinkInput.value = newSelectedKinks;
+
+                    // 説明フィールドの性癖タグも更新
+                    const textareaId = kinkInputId.replace('_kinks', '_description');
+                    const textarea = document.getElementById(textareaId);
+                    if (textarea) {
+                        let description = textarea.value;
+                        const kinkPrefix = newSelectedKinks ? `【性癖: ${newSelectedKinks}】\n` : '';
+                        const existingKinkRegex = /^【性癖:.*?】\n*/;
+                        description = description.replace(existingKinkRegex, '');
+                        textarea.value = kinkPrefix + description;
+                    }
+                })
+                .catch(error => {
+                    console.error('Error loading kinks:', error);
+                    showNotification('性癖リストの読み込みに失敗しました', 'danger');
+                });
         }
+
+        // フォームデータを適用する共通関数
+        function applyFormData(data) {
+            // プロンプトと必須設定
+            document.getElementById('prompt').value = data.prompt || '';
+            document.getElementById('essential_settings').value = data.essential_settings || '';
+            document.getElementById('writing_style').value = '村上龍風'; // 固定
+
+            // モデル選択
+            const modelSelect = document.getElementById('model_choice');
+            if (modelSelect && data.model_choice) {
+                let found = Array.from(modelSelect.options).some(opt => {
+                    if (opt.value === data.model_choice) {
+                        opt.selected = true;
+                        return true;
+                    }
+                    return false;
+                });
+                if (!found) console.warn(`保存されたモデル "${data.model_choice}" は選択肢にありません。`);
+            }
+
+            // 強度設定
+            const levels = ['explicit_level', 'detail_level', 'psychological_level'];
+            levels.forEach(level => {
+                const slider = document.getElementById(level);
+                const valueDisplay = document.getElementById(`${level}-value`);
+                const hiddenInput = document.getElementById(`${level}-hidden`);
+                if (slider && valueDisplay && hiddenInput) {
+                    const templateValue = data[level];
+                    const defaultValue = slider.getAttribute('data-default') || '70';
+                    const valueToSet = templateValue !== undefined && templateValue !== null ? templateValue : defaultValue;
+                    slider.value = valueToSet;
+                    valueDisplay.textContent = valueToSet;
+                    hiddenInput.value = valueToSet;
+                }
+            });
+
+            // キャラクター設定
+            for (let i = 0; i < 2; i++) {
+                const charIndex = i + 1;
+                const charData = data.characters && Array.isArray(data.characters) ? data.characters[i] : null;
+                document.getElementById(`character_name${charIndex}`).value = charData?.name || '';
+                document.getElementById(`character_description${charIndex}`).value = charData?.description || '';
+                const genderSelect = document.getElementById(`character_gender${charIndex}`);
+                if (genderSelect) {
+                    genderSelect.value = charData?.gender || (charIndex === 1 ? 'female' : 'male');
+                }
+                const kinksHiddenInput = document.getElementById(`character_kinks${charIndex}`);
+                const kinkButtonsContainer = document.getElementById(`character${charIndex}_kinks`);
+                if (kinksHiddenInput && kinkButtonsContainer) {
+                    const kinkButtons = kinkButtonsContainer.querySelectorAll('.kink-btn');
+                    kinkButtons.forEach(btn => btn.classList.remove('selected'));
+                    if (charData?.kinks) {
+                        const kinks = charData.kinks.split('、');
+                        kinkButtons.forEach(btn => {
+                            if (kinks.includes(btn.textContent.trim())) {
+                                btn.classList.add('selected');
+                            }
+                        });
+                        kinksHiddenInput.value = charData.kinks;
+                    } else {
+                        kinksHiddenInput.value = '';
+                    }
+                }
+            }
+
+            // ストーリー構造設定
+            const structureInput = document.getElementById('selected_structure');
+            const structureCards = document.querySelectorAll('.structure-card.selectable');
+            structureCards.forEach(card => card.classList.remove('selected'));
+            if (data.story_structure && structureInput) {
+                let structureFound = false;
+                structureCards.forEach(card => {
+                    if (card.querySelector('h4').textContent === data.story_structure) {
+                        card.classList.add('selected');
+                        structureInput.value = data.story_structure;
+                        structureFound = true;
+                    }
+                });
+                if (!structureFound) structureInput.value = '';
+            } else if (structureInput) {
+                structureInput.value = '';
+            }
+
+            // 話数設定リセット (第1話のみ残す)
+            const episodesContainer = document.getElementById('episodes-container');
+            while (episodesContainer.children.length > 1) {
+                episodesContainer.removeChild(episodesContainer.lastChild);
+            }
+            const firstEpisodeStyle = document.getElementById('episode1_style');
+            const firstEpisodeSlider = document.getElementById('episode1_explicit_level');
+            const firstEpisodeValue = document.getElementById('episode1_explicit_level_value');
+            if (firstEpisodeStyle) firstEpisodeStyle.value = '村上龍風';
+            if (firstEpisodeSlider && firstEpisodeValue) {
+                const globalLevelValue = document.getElementById('explicit_level').value;
+                firstEpisodeSlider.value = globalLevelValue;
+                firstEpisodeValue.textContent = globalLevelValue;
+            }
+
+            // オプション欄を開く
+            document.getElementById('options-content').style.display = 'block';
+        }
+
+        // テンプレート読み込み
+        async function loadTemplates() {
+            const container = document.getElementById('template-list');
+            const spinner = document.getElementById('spinner-templates');
+            const statusMsg = document.getElementById('status-templates');
+            try {
+                const response = await fetch('/templates');
+                if (!response.ok) {
+                    throw new Error(`テンプレート取得エラー: ${response.status}`);
+                }
+                const templates = await response.json();
+                container.innerHTML = '';
+                if (!templates || templates.length === 0) {
+                    container.innerHTML = '<div class="alert alert-info">利用可能なテンプレートがありません。新しいテンプレートを作成してください。</div>';
+                    return;
+                }
+                templates.forEach(template => {
+                    const card = document.createElement('div');
+                    card.className = 'template-card';
+                    const promptExcerpt = template.prompt ? template.prompt.substring(0, 80) + '...' : '説明がありません';
+                    card.innerHTML = `<h3>${template.name || '無名のテンプレート'}</h3><p>${promptExcerpt}</p>`;
+                    card.onclick = () => applyTemplate(template.id || '');
+                    container.appendChild(card);
+                });
+            } catch (error) {
+                console.error('テンプレート読み込みエラー:', error);
+                if (container) {
+                    container.innerHTML = `<div class="alert alert-danger">テンプレート読み込みに失敗しました: ${error.message}</div>`;
+                }
+            } finally {
+                if (spinner) spinner.style.display = 'none';
+                if (statusMsg) statusMsg.style.display = 'none';
+            }
+        }
+
+        // テンプレート適用
+        async function applyTemplate(templateId) {
+            if (!templateId) {
+                console.error("テンプレートIDが無効です。");
+                showNotification("テンプレートの適用に失敗しました。", "danger");
+                return;
+            }
+            showSpinner('テンプレートを適用中...');
+            try {
+                const response = await fetch(`/apply_template/${templateId}`);
+                if (!response.ok) {
+                    throw new Error(`テンプレート適用エラー: ${response.status}`);
+                }
+                const template = await response.json();
+                applyFormData(template);
+                showNotification(`テンプレート「${template.name || '無名'}」を適用しました。`, 'success');
+            } catch (error) {
+                console.error('テンプレート適用エラー:', error);
+                showNotification(`テンプレート適用に失敗しました: ${error.message}`, 'danger');
+            } finally {
+                hideSpinner();
+            }
+        }
+
+        // URLパラメータからプロンプトを読み込む
+        async function loadPromptFromURL() {
+            const urlParams = new URLSearchParams(window.location.search);
+            const promptFilename = urlParams.get('load_prompt');
+            if (!promptFilename) return;
+            showSpinner('保存済みのプロンプトを読み込み中...');
+            try {
+                const response = await fetch(`/load_prompt/${encodeURIComponent(promptFilename)}`);
+                if (!response.ok) throw new Error(`読込エラー: ${response.status}`);
+                const promptData = await response.json();
+                applyFormData(promptData);
+                showNotification(`プロンプト「${promptData.name || '無名'}」を読み込みました。`, 'success');
+            } catch (error) {
+                console.error('プロンプト読み込みエラー:', error);
+                showNotification(`プロンプト読み込みに失敗: ${error.message}`, 'danger');
+            } finally {
+                hideSpinner();
+            }
+        }
+
+        // オプション表示切り替え
+        function toggleOptions() {
+            const optionsContent = document.getElementById('options-content');
+            const isHidden = optionsContent.style.display === 'none' || optionsContent.style.display === '';
+            optionsContent.style.display = isHidden ? 'block' : 'none';
+        }
+
+        // ストーリー構造の選択処理
+        function selectStructure(element, structureName) {
+            document.querySelectorAll('.structure-card.selectable').forEach(card => {
+                card.classList.remove('selected');
+            });
+            element.classList.add('selected');
+            document.getElementById('selected_structure').value = structureName;
+            showNotification(`ストーリー構造「${structureName}」を選択`, 'info', 2500);
+        }
+
+        // 性癖ボタンの選択処理
+        function toggleKink(button, targetFieldId) {
+            button.classList.toggle('selected');
+            const parent = button.closest('.kink-buttons');
+            if (!parent) return;
+            const selectedKinks = Array.from(parent.querySelectorAll('.kink-btn.selected'))
+                .map(btn => btn.textContent.trim())
+                .join('、');
+            const targetInput = document.getElementById(targetFieldId);
+            if (targetInput) targetInput.value = selectedKinks;
+            const textareaId = targetFieldId.replace('_kinks', '_description');
+            const textarea = document.getElementById(textareaId);
+            if (textarea) {
+                let description = textarea.value;
+                const kinkPrefix = selectedKinks ? `【性癖: ${selectedKinks}】\n` : '';
+                const existingKinkRegex = /^【性癖:.*?】\n*/;
+                description = description.replace(existingKinkRegex, '');
+                textarea.value = kinkPrefix + description;
+            }
+        }
+
+        // フォーム送信前のバリデーション
+        function validateForm() {
+            let isValid = true;
+            const promptText = document.getElementById('prompt').value.trim();
+            if (promptText.length < 10) {
+                showNotification('プロンプトが短すぎます (10文字以上推奨)。', 'danger');
+                isValid = false;
+            }
+            for (let i = 1; i <= 2; i++) {
+                const nameField = document.getElementById(`character_name${i}`);
+                const descField = document.getElementById(`character_description${i}`);
+                const genderSelect = document.getElementById(`character_gender${i}`);
+                if (!nameField || !descField || !genderSelect) continue;
+                const nameValue = nameField.value.trim();
+                const descValue = descField.value.trim();
+                const genderValue = genderSelect.value;
+                const kinksValue = document.getElementById(`character_kinks${i}`)?.value || '';
+                if (!nameValue && !descValue) {
+                    nameField.value = `【ランダム: ${genderValue}】`;
+                    descField.value = `【ランダム生成】【性別: ${genderValue}】`;
+                } else if (nameValue && !descValue.replace(/^【性癖:.*?】\n*/, '').trim()) {
+                    const kinkTag = kinksValue ? `【性癖: ${kinksValue}】\n` : '';
+                    descField.value = `${kinkTag}【ランダム生成】【性別: ${genderValue}】`;
+                }
+            }
+            if (!isValid) return false;
+            showSpinner('あらすじを生成中... (最大2分程度)');
+            const submitButton = document.getElementById('submit-button');
+            if (submitButton) submitButton.disabled = true;
+            startProgressAnimation();
+            return true;
+        }
+
+        // 話数設定の動的追加
+        function addEpisodeSettings() {
+            const episodesContainer = document.getElementById('episodes-container');
+            const episodeCount = episodesContainer.children.length + 1;
+            const newEpisode = document.createElement('div');
+            newEpisode.className = 'episode-settings';
+            const globalLevel = document.getElementById('explicit_level').value;
+            newEpisode.innerHTML = `
+                <h3>第${episodeCount}話</h3>
+                <label for="episode${episodeCount}_style">文体:</label>
+                <select id="episode${episodeCount}_style" name="episode${episodeCount}_style">
+                    <option value="村上龍風">村上龍風 (全体設定)</option>
+                    <option value="団鬼六">団鬼六</option>
+                </select>
+                <div class="slider-container">
+                    <label for="episode${episodeCount}_explicit_level">淫語レベル:</label>
+                    <input type="range" min="0" max="100" value="${globalLevel}" id="episode${episodeCount}_explicit_level" name="episode${episodeCount}_explicit_level" class="intensity-slider episode-slider">
+                    <span id="episode${episodeCount}_explicit_level_value" class="slider-value">${globalLevel}</span>%
+                </div>
+            `;
+            episodesContainer.appendChild(newEpisode);
+            setupSliderListener(`episode${episodeCount}_explicit_level`);
+            showNotification(`第${episodeCount}話の設定欄を追加しました`, 'info', 2000);
+        }
+
+        // スライダーのイベントリスナーを設定する補助関数
+        function setupSliderListener(sliderId) {
+            const slider = document.getElementById(sliderId);
+            const valueDisplay = document.getElementById(sliderId.replace('_explicit_level', '_explicit_level_value')) || document.getElementById(`${sliderId}_value`);
+            if (slider && valueDisplay) {
+                valueDisplay.textContent = slider.value;
+                slider.addEventListener('input', function() {
+                    valueDisplay.textContent = this.value;
+                    const hiddenInput = document.getElementById(sliderId + '-hidden');
+                    if (hiddenInput) hiddenInput.value = this.value;
+                });
+            } else {
+                console.error(`スライダー(${sliderId})または値表示要素が見つかりません。`);
+            }
+        }
+
+        // スピナー表示
+        function showSpinner(message = '') {
+            const spinner = document.getElementById('spinner');
+            const statusMsg = document.getElementById('status-message');
+            if (spinner) spinner.style.display = 'block';
+            if (statusMsg) {
+                statusMsg.textContent = message || '処理中...';
+                statusMsg.style.display = 'block';
+            }
+        }
+
+        // スピナー非表示
+        function hideSpinner() {
+            const spinner = document.getElementById('spinner');
+            const statusMsg = document.getElementById('status-message');
+            const progressBar = document.getElementById('progress-bar');
+            const submitButton = document.getElementById('submit-button');
+            if (spinner) spinner.style.display = 'none';
+            if (statusMsg) statusMsg.style.display = 'none';
+            if (progressBar) progressBar.style.display = 'none';
+            if (submitButton) submitButton.disabled = false;
+            if (progressInterval) {
+                clearInterval(progressInterval);
+                progressInterval = null;
+            }
+        }
+
+        // 通知表示
+        function showNotification(message, type = 'info', duration = 5000) {
+            const alertContainer = document.getElementById('alert-container');
+            if (!alertContainer) return;
+            const alert = document.createElement('div');
+            alert.className = `alert alert-${type} alert-dismissible fade show`;
+            alert.setAttribute('role', 'alert');
+            alert.style.opacity = '1';
+            alert.style.transition = 'opacity 0.5s ease-out';
+            alert.innerHTML = `
+                ${message}
+                <button type="button" class="btn-close" aria-label="Close"></button>
+            `;
+            alertContainer.prepend(alert);
+            const closeButton = alert.querySelector('.btn-close');
+            if (closeButton) {
+                closeButton.onclick = () => {
+                    alert.style.opacity = '0';
+                    setTimeout(() => {
+                        if (alert.parentNode === alertContainer) {
+                            alertContainer.removeChild(alert);
+                        }
+                    }, 500);
+                };
+            }
+            if (duration > 0) {
+                setTimeout(() => {
+                    if (closeButton) closeButton.click();
+                }, duration);
+            }
+        }
+
+        // プログレスバーのアニメーション
+        let progressInterval = null;
+        function startProgressAnimation() {
+            const progressBar = document.getElementById('progress-bar');
+            const progressBarInner = document.getElementById('progress-bar-inner');
+            const statusMessage = document.getElementById('status-message');
+            if (!progressBar || !progressBarInner || !statusMessage) return;
+            const messages = [
+                '設定を解析中...', 'AIがプロットを考案中...', 'キャラクターの関係性を構築中...',
+                'ストーリー展開を検討中...', 'シナリオを組み立て中...', '各話の流れを調整中...',
+                'あらすじの最終調整中...'
+            ];
+            progressBar.style.display = 'block';
+            statusMessage.style.display = 'block';
+            progressBarInner.style.width = `0%`;
+            let progress = 0;
+            let messageIndex = 0;
+            statusMessage.textContent = messages[messageIndex];
+            if (progressInterval) clearInterval(progressInterval);
+            progressInterval = setInterval(() => {
+                progress += Math.random() * 5 + 2;
+                if (progress > 98) progress = 98;
+                progressBarInner.style.width = `${progress}%`;
+                const newMessageIndex = Math.min(Math.floor(progress / (100 / messages.length)), messages.length - 1);
+                if (newMessageIndex > messageIndex) {
+                    messageIndex = newMessageIndex;
+                    statusMessage.textContent = messages[messageIndex];
+                }
+            }, 400);
+        }
+
+        // DOMContentLoaded
+        document.addEventListener('DOMContentLoaded', function() {
+            loadTemplates();
+            loadPromptFromURL();
+            const novelForm = document.getElementById('novel-form');
+            if (novelForm) novelForm.onsubmit = validateForm;
+            
+            // 性別選択の変更イベントを設定
+            const gender1Select = document.getElementById('character_gender1');
+            const gender2Select = document.getElementById('character_gender2');
+            
+            if (gender1Select) {
+                gender1Select.addEventListener('change', function() {
+                    updateKinksByGender(this, 'character1_kinks', 'character_kinks1');
+                });
+                // 初期ロード時にも性癖リストを読み込む
+                updateKinksByGender(gender1Select, 'character1_kinks', 'character_kinks1');
+            }
+            
+            if (gender2Select) {
+                gender2Select.addEventListener('change', function() {
+                    updateKinksByGender(this, 'character2_kinks', 'character_kinks2');
+                });
+                // 初期ロード時にも性癖リストを読み込む
+                updateKinksByGender(gender2Select, 'character2_kinks', 'character_kinks2');
+            }
+            
+            document.querySelectorAll('.intensity-slider').forEach(slider => {
+                if (!slider.hasAttribute('data-default')) {
+                    slider.setAttribute('data-default', slider.value);
+                }
+                setupSliderListener(slider.id);
+            });
+            const optionsToggle = document.querySelector('.options-toggle');
+            if (optionsToggle) optionsToggle.addEventListener('click', toggleOptions);
+            const addEpisodeButton = document.querySelector('.add-episode-btn');
+            if (addEpisodeButton) addEpisodeButton.addEventListener('click', addEpisodeSettings);
+            document.querySelectorAll('.structure-card.selectable').forEach(card => {
+                const structureName = card.querySelector('h4')?.textContent;
+                if (structureName) {
+                    card.addEventListener('click', () => selectStructure(card, structureName));
+                }
+            });
+            document.querySelectorAll('.kink-btn').forEach(button => {
+                const targetFieldId = button.closest('.kink-buttons').id.replace('character', 'character_kinks');
+                button.addEventListener('click', () => toggleKink(button, targetFieldId));
+            });
+        });
     </script>
 </head>
 <body>
     <div class="container">
-        <h1>小説生成ツール</h1>
-        <form action="/generate" method="post">
-            <label for="genre">ジャンルを選択:</label>
-            <select id="genre" name="genre">
-                <option value="ファンタジー">ファンタジー</option>
-                <option value="恋愛">恋愛</option>
-                <option value="ミステリー">ミステリー</option>
-                <option value="SF">SF</option>
-                <option value="ホラー">ホラー</option>
-                <option value="歴史">歴史</option>
-            </select>
-
-            <label for="model_choice">使用するAIモデル:</label>
-            <select id="model_choice" name="model_choice">
-                <option value="openrouter">OpenRouter (GPT-3.5-Turbo)</option>
-                <option value="openai">OpenAI (GPT-4)</option>
-                <option value="gemini">Google Gemini</option>
-                <option value="deepseek">DeepSeek</option>
-                <option value="anthropic">Anthropic (Claude 3.5)</option>
-                <option value="xai">xAI (Grok-2)</option>
-            </select>
-            
-            <div class="idea-generator">
-                <h3>アイデアが思いつかない？</h3>
-                <p>選択したジャンルに基づいて、ストーリーのアイデアを自動生成できます。</p>
-                <button type="button" onclick="generateIdeas()">アイデアを生成</button>
-                <div id="spinner" class="spinner"></div>
-                <div id="ideas-container" class="ideas-container"></div>
+        <h1>官能小説生成ツール</h1>
+        <div style="text-align: right; margin-bottom: 20px;">
+            <a href="/saved_prompts_page" style="color: #e91e63; text-decoration: none;">保存済みプロンプト一覧</a>
+        </div>
+        <div id="alert-container" style="position: fixed; top: 20px; right: 20px; z-index: 1050; width: 300px;"></div>
+        <h2>テンプレートから選択</h2>
+        <div id="template-list" class="template-list">
+            <div id="spinner-templates" class="spinner" style="display: block; margin: 20px auto;"></div>
+            <div id="status-templates" class="status-message" style="display: block;">テンプレートを読み込み中...</div>
+        </div>
+        <form id="novel-form" action="/generate_synopsis" method="post">
+            <div class="form-group mb-3">
+                <label for="model_choice">使用するAIモデル:</label>
+                <select id="model_choice" name="model_choice" class="form-select">
+                    <option value="xai" selected>xAI (Grok-2)</option>
+                    <option value="grok-3">xAI (Grok-3)</option>
+                    <option value="gpt-4o">OpenAI (GPT-4o)</option>
+                    <option value="claude-3-opus">Anthropic (Claude 3 Opus)</option>
+                    <option value="deepseek-v3">Deepseek (V3-0324)</option>
+                </select>
+                
             </div>
-
-            <label for="prompt">お題を入力してください:</label>
-            <input type="text" id="prompt" name="prompt" placeholder="例: 魔法学校で友情を育む物語" required>
-
-            <label for="instructions">詳細な指示（オプション）:</label>
-            <textarea id="instructions" name="instructions" placeholder="例: 舞台設定、世界観、時代背景などの詳細"></textarea>
-
-            <label for="story_request">ストーリー展開のリクエスト（オプション）:</label>
-            <textarea id="story_request" name="story_request" placeholder="例: 主人公の成長や、物語の転換点について"></textarea>
-
-            <label for="font_choice">表示スタイル:</label>
-            <select id="font_choice" name="font_choice">
-                <option value="sans">標準</option>
-                <option value="serif">文学的</option>
-            </select>
-
-            <div class="character-form">
-                <h3>キャラクターを追加</h3>
-                <label for="character_name">名前:</label>
-                <input type="text" id="character_name" name="character_name" placeholder="例: 山田太郎">
-                <label for="character_description">説明:</label>
-                <textarea id="character_description" name="character_description" placeholder="例: 16歳、高校生、内向的だが正義感が強い"></textarea>
+            <div class="form-group mb-3">
+                <label for="prompt">メインプロンプト (シナリオ全体を詳しく指示):</label>
+                <textarea id="prompt" name="prompt" class="form-control" placeholder="例: 出張先のホテルで偶然再会した元恋人との情事。互いにパートナーがいる背徳感と、昔の感情が蘇る葛藤を描く。" required minlength="10"></textarea>
             </div>
-
-            <input type="submit" value="物語を生成">
+            <div class="options-toggle">▼ オプション設定 (クリックで開く)</div>
+            <div id="options-content" class="options-content">
+                <div class="options-section">
+                    <h3>文体サンプル</h3>
+                    <p>主に村上龍風を使用します（変更可能）：</p>
+                    <div class="style-sample">
+                        <h4>村上龍風の特徴</h4>
+                        <p>都市の闇と若者文化の融合。生々しい描写と独特のリズム感を持つ挑戦的な文体。</p>
+                        <div class="sample-text">
+                            「俺は彼女の呼吸を肌で感じながら、都市の夜の光を見つめた。何もかもが虚構のようで、それでいて痛々しいほど生々しい。セックスの後の虚脱感と興奮が同時に押し寄せる。「どうして？」と彼女は尋ねる。答えはない。そんなものはない。ただ欲望と孤独の間を彷徨い続けるだけだ。」
+                        </div>
+                    </div>
+                    <input type="hidden" id="writing_style" name="writing_style" value="村上龍風">
+                </div>
+                <div class="options-section">
+                    <h3>ストーリー構造</h3>
+                    <p>物語の全体的な構造を選択 (AIへの指示):</p>
+                    <div class="structure-list">
+                        <div class="structure-card selectable"><h4>三幕構成</h4><p>設定紹介→対立激化→解決。</p></div>
+                        <div class="structure-card selectable"><h4>起承転結</h4><p>導入→展開→転換→結末。</p></div>
+                        <div class="structure-card selectable"><h4>段階的調教</h4><p>経験→慣れ→快楽→変化→依存。</p></div>
+                        <div class="structure-card selectable"><h4>三角関係</h4><p>嫉妬、欲望、葛藤、均衡変化。</p></div>
+                    </div>
+                    <input type="hidden" id="selected_structure" name="selected_structure" value="">
+                </div>
+                <div class="options-section">
+                    <h3>表現レベル設定 (全体)</h3>
+                    <div class="intensity-control">
+                        <div class="slider-container">
+                            <label for="explicit_level">淫語:</label>
+                            <input type="range" min="0" max="100" value="70" id="explicit_level" name="explicit_level" class="intensity-slider" data-default="70">
+                            <span id="explicit_level-value" class="slider-value">70</span>%
+                            <input type="hidden" id="explicit_level-hidden" name="explicit_level" value="70">
+                        </div>
+                        <div class="slider-container">
+                            <label for="detail_level">描写:</label>
+                            <input type="range" min="0" max="100" value="80" id="detail_level" name="detail_level" class="intensity-slider" data-default="80">
+                            <span id="detail_level-value" class="slider-value">80</span>%
+                            <input type="hidden" id="detail_level-hidden" name="detail_level" value="80">
+                        </div>
+                        <div class="slider-container">
+                            <label for="psychological_level">心理:</label>
+                            <input type="range" min="0" max="100" value="60" id="psychological_level" name="psychological_level" class="intensity-slider" data-default="60">
+                            <span id="psychological_level-value" class="slider-value">60</span>%
+                            <input type="hidden" id="psychological_level-hidden" name="psychological_level" value="60">
+                        </div>
+                    </div>
+                </div>
+                <div class="options-section">
+                    <h3>登場人物設定</h3>
+                    <p>空欄でランダム生成されます</p>
+                    <div class="character-row">
+                        <div class="character-column">
+                            <h4>登場人物1</h4>
+                            <input type="text" id="character_name1" name="character_name1" placeholder="名前" class="form-control mb-2">
+                            <select id="character_gender1" name="character_gender1" class="form-select mb-3">
+                                <option value="female" selected>女性</option>
+                                <option value="male">男性</option>
+                            </select>
+                            <div class="kink-selection">
+                                <h5>性癖・特徴</h5>
+                                <div id="character1_kinks" class="kink-buttons">
+                                    <!-- 性癖ボタンはJSで動的に生成 -->
+                                </div>
+                                <input type="hidden" id="character_kinks1" name="character_kinks1" value="">
+                            </div>
+                            <textarea id="character_description1" name="character_description1" class="form-control" placeholder="外見、性格、背景など"></textarea>
+                        </div>
+                        <div class="character-column">
+                            <h4>登場人物2</h4>
+                            <input type="text" id="character_name2" name="character_name2" placeholder="名前" class="form-control mb-2">
+                            <select id="character_gender2" name="character_gender2" class="form-select mb-3">
+                                <option value="male" selected>男性</option>
+                                <option value="female">女性</option>
+                            </select>
+                            <div class="kink-selection">
+                                <h5>性癖・特徴</h5>
+                                <div id="character2_kinks" class="kink-buttons">
+                                    <!-- 性癖ボタンはJSで動的に生成 -->
+                                </div>
+                                <input type="hidden" id="character_kinks2" name="character_kinks2" value="">
+                            </div>
+                            <textarea id="character_description2" name="character_description2" class="form-control" placeholder="外見、性格、背景など"></textarea>
+                        </div>
+                    </div>
+                    <div class="form-group mb-3">
+                        <label for="essential_settings">絶対守ってほしい設定:</label>
+                        <textarea id="essential_settings" name="essential_settings" class="form-control" placeholder="例：NTR要素はNG、必ずハッピーエンドにする、特定のフェチ描写を入れる"></textarea>
+                    </div>
+                </div>
+                <div class="options-section">
+                    <h3>話数ごとの設定 (任意)</h3>
+                    <p>全体設定と異なる場合のみ指定します。</p>
+                    <div id="episodes-container">
+                        <div class="episode-settings">
+                            <h3>第1話</h3>
+                            <div class="form-group mb-3">
+                                <label for="episode1_style">文体:</label>
+                                <select id="episode1_style" name="episode1_style" class="form-select">
+                                    <option value="村上龍風">村上龍風 (全体設定)</option>
+                                    <option value="団鬼六">団鬼六</option>
+                                </select>
+                            </div>
+                            <div class="slider-container">
+                                <label for="episode1_explicit_level">淫語:</label>
+                                <input type="range" min="0" max="100" value="70" id="episode1_explicit_level" name="episode1_explicit_level" class="intensity-slider episode-slider" data-default="70">
+                                <span id="episode1_explicit_level_value" class="slider-value">70</span>%
+                            </div>
+                        </div>
+                    </div>
+                    <button type="button" class="add-episode-btn">+ 話数を追加</button>
+                </div>
+            </div>
+            <div id="progress-bar" class="progress-bar">
+                <div id="progress-bar-inner" class="progress-bar-inner"></div>
+            </div>
+            <div id="status-message" class="status-message"></div>
+            <div style="text-align: center; margin-top: 20px;">
+                <input type="submit" id="submit-button" value="あらすじを生成" class="btn btn-primary btn-lg">
+                <div id="spinner" class="spinner" style="margin: 10px auto 0;"></div>
+            </div>
         </form>
     </div>
 </body>

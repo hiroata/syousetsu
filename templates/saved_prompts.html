@@ -1,0 +1,159 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>保存済みプロンプト一覧 - 官能小説生成ツール</title>
+    <style>
+        body { 
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+            line-height: 1.6; 
+            margin: 0; 
+            padding: 20px; 
+            background-color: #f0f2f5; 
+        }
+        h1 { 
+            color: #333; 
+            text-align: center; 
+            border-bottom: 2px solid #e91e63; 
+            padding-bottom: 10px; 
+            margin-bottom: 30px; 
+        }
+        .container { 
+            max-width: 800px; 
+            margin: 0 auto; 
+            background-color: white; 
+            padding: 30px; 
+            border-radius: 8px; 
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1); 
+        }
+        .prompt-list {
+            margin-top: 20px;
+        }
+        .prompt-card {
+            padding: 15px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            margin-bottom: 15px;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+        .prompt-card:hover {
+            border-color: #e91e63;
+            background-color: #fff0f5;
+        }
+        .prompt-card h3 {
+            margin-top: 0;
+            margin-bottom: 5px;
+            color: #e91e63;
+        }
+        .prompt-card p {
+            margin: 5px 0;
+            color: #666;
+            font-size: 14px;
+        }
+        .prompt-timestamp {
+            font-size: 12px;
+            color: #999;
+        }
+        .button { 
+            background-color: #e91e63; 
+            color: white; 
+            padding: 12px 20px; 
+            border: none; 
+            border-radius: 5px; 
+            cursor: pointer;
+            font-size: 16px; 
+            transition: background-color 0.3s;
+            display: inline-block;
+            text-decoration: none;
+        }
+        .button:hover { 
+            background-color: #c2185b; 
+        }
+        .spinner {
+            display: none;
+            width: 30px;
+            height: 30px;
+            border: 3px solid #f3f3f3;
+            border-top: 3px solid #e91e63;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+            margin: 10px auto;
+        }
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>保存済みプロンプト一覧</h1>
+        
+        <p>以下は保存済みのプロンプト設定です。クリックすると設定を読み込んで小説生成を始めることができます。</p>
+        
+        <a href="/" class="button">トップに戻る</a>
+        
+        <div id="spinner" class="spinner"></div>
+        
+        <div id="prompt-list" class="prompt-list">
+            <!-- プロンプト一覧はJavaScriptで動的に生成されます -->
+            <p>読み込み中...</p>
+        </div>
+    </div>
+    
+    <script>
+        // 保存済みプロンプト一覧を読み込む
+        async function loadSavedPrompts() {
+            try {
+                const response = await fetch('/saved_prompts');
+                const prompts = await response.json();
+                
+                const container = document.getElementById('prompt-list');
+                container.innerHTML = '';
+                
+                if (prompts.length === 0) {
+                    container.innerHTML = '<p>保存済みのプロンプトはありません。</p>';
+                    return;
+                }
+                
+                prompts.forEach(prompt => {
+                    const card = document.createElement('div');
+                    card.className = 'prompt-card';
+                    card.innerHTML = `
+                        <h3>${prompt.name}</h3>
+                        <p class="prompt-timestamp">保存日時: ${prompt.timestamp}</p>
+                    `;
+                    card.onclick = () => loadPrompt(prompt.filename);
+                    container.appendChild(card);
+                });
+            } catch (error) {
+                console.error('プロンプト一覧読み込みエラー:', error);
+                document.getElementById('prompt-list').innerHTML = 
+                    '<p>プロンプト一覧の読み込みに失敗しました。</p>';
+            }
+        }
+        
+        // プロンプトを読み込んでフォームに設定
+        async function loadPrompt(filename) {
+            try {
+                document.getElementById('spinner').style.display = 'block';
+                
+                const response = await fetch(`/load_prompt/${filename}`);
+                const promptData = await response.json();
+                
+                // フォームにリダイレクト
+                window.location.href = `/?load_prompt=${encodeURIComponent(filename)}`;
+            } catch (error) {
+                console.error('プロンプト読み込みエラー:', error);
+                alert('プロンプトの読み込みに失敗しました。');
+                document.getElementById('spinner').style.display = 'none';
+            }
+        }
+        
+        // ページ読み込み時に実行
+        window.onload = loadSavedPrompts;
+    </script>
+</body>
+</html>

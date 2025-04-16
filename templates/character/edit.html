@@ -1,0 +1,172 @@
+{% extends "layout.html" %}
+{% block title %}{% if is_new %}新規場所作成{% else %}場所編集{% endif %}{% endblock %}
+
+{% block content %}
+<div class="container">
+    <h1 class="mb-4">{% if is_new %}新規場所作成{% else %}「{{ location.name }}」を編集{% endif %}</h1>
+    
+    <div class="row mb-4">
+        <div class="col">
+            <a href="/locations" class="btn btn-secondary">場所ギャラリーに戻る</a>
+        </div>
+    </div>
+    
+    <form method="POST" action="/locations/save">
+        {% if not is_new %}
+            <input type="hidden" name="id" value="{{ location.id }}">
+        {% endif %}
+        
+        <div class="row">
+            <div class="col-md-6">
+                <div class="card mb-4">
+                    <div class="card-header">
+                        <h5>基本情報</h5>
+                    </div>
+                    <div class="card-body">
+                        <div class="mb-3">
+                            <label for="name" class="form-label">場所名 <span class="text-danger">*</span></label>
+                            <input type="text" class="form-control" id="name" name="name" 
+                                   value="{{ location.name }}" required>
+                        </div>
+                        
+                        <div class="mb-3">
+                            <label for="category" class="form-label">カテゴリー</label>
+                            <select class="form-select" id="category" name="category">
+                                <option value="" {% if not location.category %}selected{% endif %}>-- 選択してください --</option>
+                                {% for category in [
+                                    "ホテル", "自宅", "オフィス", "カフェ", "バー", "レストラン", "温泉旅館",
+                                    "リゾート", "公園", "車内", "電車", "学校", "病院", "プール", "ビーチ"
+                                ] %}
+                                    <option value="{{ category }}" {% if location.category == category %}selected{% endif %}>
+                                        {{ category }}
+                                    </option>
+                                {% endfor %}
+                            </select>
+                        </div>
+                        
+                        <div class="mb-3">
+                            <label for="description" class="form-label">説明</label>
+                            <textarea class="form-control" id="description" name="description" 
+                                      rows="3">{{ location.description }}</textarea>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="col-md-6">
+                <div class="card mb-4">
+                    <div class="card-header">
+                        <h5>詳細設定</h5>
+                    </div>
+                    <div class="card-body">
+                        <div class="mb-3">
+                            <label for="atmosphere" class="form-label">雰囲気</label>
+                            <textarea class="form-control" id="atmosphere" name="atmosphere" 
+                                      rows="2">{{ location.atmosphere }}</textarea>
+                        </div>
+                        
+                        <div class="mb-3">
+                            <label for="features" class="form-label">特徴的な設備や家具</label>
+                            <textarea class="form-control" id="features" name="features" 
+                                      rows="3">{{ location.features }}</textarea>
+                        </div>
+                        
+                        <div class="mb-3">
+                            <label for="tags" class="form-label">タグ</label>
+                            <input type="text" class="form-control" id="tags" name="tags" 
+                                   value="{{ location.tags }}">
+                            <div class="form-text">カンマ区切りでタグを入力（例: 高級, 夜景）</div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="card mb-4">
+                    <div class="card-header d-flex justify-content-between align-items-center">
+                        <h5 class="mb-0">ランダム生成</h5>
+                        <button type="button" class="btn btn-sm btn-outline-primary" 
+                                onclick="generateRandom()">全体を生成</button>
+                    </div>
+                    <div class="card-body">
+                        <div class="d-flex mb-2">
+                            <span>個別要素を生成：</span>
+                            <div class="ms-2">
+                                <button type="button" class="btn btn-sm btn-outline-secondary" 
+                                        onclick="generateRandomField('atmosphere')">雰囲気</button>
+                                <button type="button" class="btn btn-sm btn-outline-secondary" 
+                                        onclick="generateRandomField('features')">特徴</button>
+                            </div>
+                        </div>
+                        <div class="form-text">※ランダム生成を使用すると、現在の入力内容が上書きされます。</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="row">
+            <div class="col">
+                <button type="submit" class="btn btn-primary">保存</button>
+                <a href="/locations" class="btn btn-outline-secondary">キャンセル</a>
+            </div>
+        </div>
+    </form>
+</div>
+
+<script>
+    // ランダム生成関数
+    function generateRandom() {
+        fetch('/locations/generate_random', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            }
+        })
+        .then(response => response.json())
+        .then(data => {
+            // カテゴリー設定
+            if (data.category) {
+                const categorySelect = document.getElementById('category');
+                for (let i = 0; i < categorySelect.options.length; i++) {
+                    if (categorySelect.options[i].value === data.category) {
+                        categorySelect.selectedIndex = i;
+                        break;
+                    }
+                }
+            }
+            
+            // 各フィールドに値を設定
+            document.getElementById('atmosphere').value = data.atmosphere || '';
+            document.getElementById('features').value = data.features || '';
+        })
+        .catch(error => {
+            console.error('Error generating random location:', error);
+            alert('ランダム生成中にエラーが発生しました。');
+        });
+    }
+    
+    // 特定フィールドのみランダム生成
+    function generateRandomField(field) {
+        fetch('/locations/generate_random', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            }
+        })
+        .then(response => response.json())
+        .then(data => {
+            // 指定されたフィールドのみ更新
+            if (data[field]) {
+                document.getElementById(field).value = data[field];
+            }
+        })
+        .catch(error => {
+            console.error('Error generating random field:', error);
+            alert('ランダム生成中にエラーが発生しました。');
+        });
+    }
+    
+    // カテゴリー変更時のイベント
+    document.getElementById('category').addEventListener('change', function() {
+        // カテゴリー特有の設定があれば更新
+    });
+</script>
+{% endblock %}

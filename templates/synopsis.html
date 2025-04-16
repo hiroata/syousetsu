@@ -1,0 +1,380 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>生成された小説のあらすじ</title>
+    <style>
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+            line-height: 1.7;
+            margin: 0;
+            padding: 20px;
+            background-color: #f0f2f5;
+        }
+        .container {
+            max-width: 800px;
+            margin: 20px auto;
+            background-color: white;
+            padding: 30px;
+            border-radius: 8px;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+        }
+        h1 {
+            text-align: center;
+            border-bottom: 2px solid #e91e63;
+            color: #333;
+            padding-bottom: 10px;
+            margin-top: 0;
+            margin-bottom: 30px;
+        }
+        h2 {
+            color: #e91e63;
+            border-left: 4px solid #e91e63;
+            padding-left: 12px;
+            margin-top: 35px;
+            margin-bottom: 15px;
+            font-size: 1.4em;
+        }
+        h3 {
+             color: #444;
+             margin-top: 20px;
+             margin-bottom: 8px;
+             font-size: 1.1em;
+        }
+        .synopsis-box {
+            padding: 20px 25px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            background-color: #fdfdfd;
+            margin-bottom: 25px;
+            line-height: 1.8;
+        }
+        .synopsis-box p {
+            margin-top: 0;
+            margin-bottom: 1em;
+            color: #333;
+        }
+        .synopsis-box p:last-child {
+            margin-bottom: 0;
+        }
+
+        .actions {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: space-between;
+            gap: 15px;
+            margin-top: 30px;
+        }
+        .button {
+            background-color: #e91e63;
+            color: white;
+            padding: 12px 25px;
+            border-radius: 5px;
+            border: none;
+            cursor: pointer;
+            text-decoration: none;
+            display: inline-block;
+            transition: background-color 0.3s;
+            text-align: center;
+            font-size: 16px;
+            flex-grow: 1;
+            min-width: 180px;
+        }
+        .button:hover {
+            background-color: #c2185b;
+        }
+        .button:disabled {
+            background-color: #e0e0e0;
+            color: #9e9e9e;
+            cursor: not-allowed;
+        }
+        .secondary-button {
+            background-color: #6c757d;
+        }
+        .secondary-button:hover {
+            background-color: #5a6268;
+        }
+        .secondary-button:disabled {
+            background-color: #e0e0e0;
+        }
+        #start-writing-form {
+            flex-grow: 1;
+            min-width: 180px;
+        }
+        #start-writing-form button {
+            width: 100%;
+        }
+
+        .revise-form {
+            margin-top: 30px;
+            padding-top: 20px;
+            border-top: 1px solid #eee;
+            display: none;
+        }
+        textarea {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            min-height: 150px;
+            margin-bottom: 15px;
+            font-family: inherit;
+            font-size: 16px;
+            box-sizing: border-box;
+        }
+        .spinner {
+            display: none;
+            width: 24px;
+            height: 24px;
+            border: 3px solid #f3f3f3;
+            border-top: 3px solid #e91e63;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+            margin: 10px auto 0;
+        }
+        .loading-message {
+             text-align: center;
+             color: #666;
+             font-size: 0.9em;
+             display: none;
+             margin-top: 5px;
+        }
+        .notification {
+            padding: 15px;
+            margin-bottom: 20px;
+            border-radius: 5px;
+            display: none;
+        }
+        .notification.success {
+            background-color: #d4edda;
+            color: #155724;
+            border: 1px solid #c3e6cb;
+        }
+        .notification.warning {
+            background-color: #fff3cd;
+            color: #856404;
+            border: 1px solid #ffeeba;
+        }
+        .notification.error {
+            background-color: #f8d7da;
+            color: #721c24;
+            border: 1px solid #f5c6cb;
+        }
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+        /* スマホ表示用 */
+        @media (max-width: 600px) {
+            .actions {
+                flex-direction: column;
+            }
+            .button, #start-writing-form {
+                 width: 100%;
+                 min-width: auto;
+            }
+            .container {
+                 padding: 20px;
+            }
+        }
+    </style>
+    <script>
+        // ユーティリティ関数
+        function showElement(elementId) {
+            const element = document.getElementById(elementId);
+            if (element) element.style.display = 'block';
+        }
+        
+        function hideElement(elementId) {
+            const element = document.getElementById(elementId);
+            if (element) element.style.display = 'none';
+        }
+        
+        function disableButton(buttonId) {
+            const button = document.getElementById(buttonId);
+            if (button) button.disabled = true;
+        }
+        
+        function enableButton(buttonId) {
+            const button = document.getElementById(buttonId);
+            if (button) button.disabled = false;
+        }
+        
+        function showNotification(message, type = 'success') {
+            // 通知要素がなければ作成
+            let notification = document.getElementById('notification');
+            if (!notification) {
+                notification = document.createElement('div');
+                notification.id = 'notification';
+                notification.className = 'notification';
+                
+                // コンテナの先頭に追加
+                const container = document.querySelector('.container');
+                if (container) container.insertBefore(notification, container.firstChild);
+            }
+            
+            // タイプに応じたクラスを設定
+            notification.className = 'notification ' + type;
+            notification.textContent = message;
+            notification.style.display = 'block';
+            
+            // 5秒後に自動非表示
+            setTimeout(() => {
+                notification.style.display = 'none';
+            }, 5000);
+        }
+
+        function showReviseForm() {
+            hideElement('start-writing-form');
+            hideElement('revise-button');
+            showElement('revise-form');
+        }
+
+        // スピナーとメッセージ表示を共通化
+        function showLoading(actionType) {
+            showElement('spinner');
+            
+            const loadingMsg = document.getElementById('loading-message');
+            if (loadingMsg) {
+                loadingMsg.textContent = actionType === 'revise' ? 'あらすじ修正中...' : '執筆開始準備中...';
+                loadingMsg.style.display = 'block';
+            }
+            
+            // ボタンの無効化
+            disableButton('revise-submit');
+            disableButton('start-button');
+            disableButton('revise-button');
+        }
+
+        // 修正依頼フォーム送信時
+        function submitRevision() {
+            const instructions = document.querySelector('#revise-form textarea[name="revision_instructions"]');
+            if (instructions && !instructions.value.trim()) {
+                 showNotification('修正指示を入力してください。', 'error');
+                 return false; // 送信中止
+            }
+            showLoading('revise');
+            return true; // 送信実行
+        }
+
+        // 執筆開始フォーム送信時
+        function startWriting() {
+            showLoading('start');
+            return true; // 送信実行
+        }
+
+        // ページ読み込み時の処理
+        document.addEventListener('DOMContentLoaded', function() {
+            // 通知があれば表示
+            {% if notification %}
+                showNotification('{{ notification.message }}', '{{ notification.type }}');
+            {% endif %}
+
+            // 各エピソード内容のチェック
+            const checkEpisodeContent = (id, defaultMsg = "（あらすじを自動生成できませんでした）") => {
+                const element = document.getElementById(id);
+                return element && element.textContent.trim() === defaultMsg;
+            };
+            
+            // 問題があれば警告表示
+            if (checkEpisodeContent('episode1-content') || 
+                checkEpisodeContent('episode2-content') || 
+                checkEpisodeContent('episode3-content')) {
+                console.warn("一部のあらすじが正しく生成されていない可能性があります。");
+                showNotification("一部のあらすじが正しく生成されていません。修正するか、設定を見直してください。", "warning");
+            }
+        });
+    </script>
+</head>
+<body>
+    <div class="container">
+        <h1>官能小説生成ツール</h1>
+
+        <!-- 通知領域（JavaScriptで動的に追加される） -->
+        <div id="notification" class="notification" style="display: none;"></div>
+
+        <h2>生成されたあらすじ</h2>
+
+        <div class="synopsis-box">
+            <h3>1話目: 導入</h3>
+            <p id="episode1-content">
+                {{ synopsis.episode1 | default('（あらすじがありません）') | safe }}
+            </p>
+
+            <h3>2話目: 展開</h3>
+            <p id="episode2-content">
+                {{ synopsis.episode2 | default('（あらすじがありません）') | safe }}
+            </p>
+
+            <h3>3話目: クライマックス</h3>
+            <p id="episode3-content">
+                {{ synopsis.episode3 | default('（あらすじがありません）') | safe }}
+            </p>
+        </div>
+
+        <div class="actions">
+            <!-- あらすじ修正ボタン -->
+            <button type="button" id="revise-button" class="button secondary-button" onclick="showReviseForm()">
+                あらすじを修正する
+            </button>
+
+            <!-- 執筆開始フォーム -->
+            <form id="start-writing-form" action="{{ url_for('novel.start_writing') }}" method="post" onsubmit="return startWriting()">
+                <!-- 必要なデータを hidden input で送信 -->
+                <input type="hidden" name="prompt" value="{{ prompt }}">
+                <input type="hidden" name="model_choice" value="{{ model_choice }}">
+                <input type="hidden" name="writing_style" value="{{ writing_style }}">
+                <input type="hidden" name="essential_settings" value="{{ essential_settings }}">
+                <input type="hidden" name="explicit_level" value="{{ explicit_level }}">
+                <input type="hidden" name="detail_level" value="{{ detail_level }}">
+                <input type="hidden" name="psychological_level" value="{{ psychological_level }}">
+                
+                {% for character in characters %}
+                <input type="hidden" name="character_name{{ loop.index }}" value="{{ character.name }}">
+                <input type="hidden" name="character_description{{ loop.index }}" value="{{ character.description }}">
+                {% endfor %}
+                
+                <input type="hidden" name="synopsis_data" value="{{ synopsis_json }}">
+
+                <button type="submit" id="start-button" class="button">
+                    このあらすじで執筆開始
+                </button>
+            </form>
+        </div>
+
+        <!-- あらすじ修正フォーム（初期非表示） -->
+        <div id="revise-form" class="revise-form">
+            <h3>あらすじの修正指示</h3>
+            <form action="{{ url_for('novel.revise_synopsis') }}" method="post" onsubmit="return submitRevision()">
+                <textarea name="revision_instructions" placeholder="例：2話目で〇〇の過去に触れてほしい、3話目はもっと激しい展開に、など具体的に指示してください。" required></textarea>
+                
+                <!-- 修正時も元の設定を送信する必要がある -->
+                <input type="hidden" name="prompt" value="{{ prompt }}">
+                <input type="hidden" name="model_choice" value="{{ model_choice }}">
+                <input type="hidden" name="writing_style" value="{{ writing_style }}">
+                <input type="hidden" name="essential_settings" value="{{ essential_settings }}">
+                <input type="hidden" name="explicit_level" value="{{ explicit_level }}">
+                <input type="hidden" name="detail_level" value="{{ detail_level }}">
+                <input type="hidden" name="psychological_level" value="{{ psychological_level }}">
+                
+                {% for character in characters %}
+                <input type="hidden" name="character_name{{ loop.index }}" value="{{ character.name }}">
+                <input type="hidden" name="character_description{{ loop.index }}" value="{{ character.description }}">
+                {% endfor %}
+                
+                <input type="hidden" name="synopsis_data" value="{{ synopsis_json }}">
+
+                <button type="submit" id="revise-submit" class="button">
+                    修正を依頼する
+                </button>
+            </form>
+        </div>
+
+        <!-- ローディング表示 -->
+        <div id="spinner" class="spinner"></div>
+        <div id="loading-message" class="loading-message"></div>
+
+    </div> <!-- End of container -->
+</body>
+</html>

@@ -3,124 +3,708 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>生成された小説</title>
+    <title>官能小説生成ツール - 結果</title>
     <style>
-        body { 
-            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
-            line-height: 1.8; 
-            margin: 0; 
-            padding: 20px; 
-            background-color: #f0f2f5; 
-        }
-        .container { 
-            max-width: 800px; 
-            margin: 0 auto; 
-            background-color: white; 
-            padding: 30px; 
-            border-radius: 8px; 
-            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1); 
-        }
-        h1 { text-align: center; border-bottom: 2px solid #007bff; }
-        .episode-title {
-            font-size: 20px;
-            font-weight: bold;
-            margin-bottom: 10px;
-        }
-        .novel-content { 
-            padding: 20px; 
-            border: 1px solid #ddd; 
-            border-radius: 5px; 
-            background-color: #fafafa; 
-            margin-bottom: 20px;
-            line-height: 1.8;
-            max-height: 500px;
-            overflow-y: auto;
-        }
-        .serif-font .novel-content {
-            font-family: Georgia, "Times New Roman", serif;
-        }
-        .continue-button { 
-            background-color: #28a745; 
-            color: white; 
-            padding: 12px 24px; 
-            border-radius: 5px; 
-            border: none; 
-            cursor: pointer;
-            text-decoration: none;
-            display: inline-block;
-            transition: background-color 0.3s;
-        }
-        .continue-button:hover {
-            background-color: #218838;
-        }
-        .back-link {
-            color: #007bff;
-            text-decoration: none;
-            margin-left: 10px;
-            display: inline-block;
-        }
-        .back-link:hover {
-            text-decoration: underline;
-        }
-        .story-history { 
-            margin-top: 30px; 
-            padding: 15px; 
-            border: 1px solid #ddd; 
-            border-radius: 5px; 
-            background-color: #f9f9f9; 
-        }
-        .story-history ul {
-            list-style-type: none;
-            padding: 0;
+        /* index.html と共通のスタイル (一部抜粋・調整) */
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+            line-height: 1.6;
             margin: 0;
+            padding: 20px;
+            background-color: #f0f2f5;
         }
-        .story-history li {
-            padding: 8px 0;
-            border-bottom: 1px solid #eee;
+        h1, h2, h3 {
+            color: #333;
+            border-bottom: 2px solid #e91e63;
+            padding-bottom: 10px;
+            margin-bottom: 20px;
         }
-        .story-history li:last-child {
-            border-bottom: none;
+        .container {
+            max-width: 1000px;
+            margin: 0 auto;
+            background-color: white;
+            padding: 30px;
+            border-radius: 8px;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
         }
-        .story-history a {
-            color: #007bff;
+        .novel-content {
+            background-color: #fff;
+            padding: 25px; /* 少し広げる */
+            border-radius: 5px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+            margin-bottom: 30px;
+            font-size: 17px; /* 少し調整 */
+            line-height: 1.8;
+            border: 1px solid #eee; /* 枠線追加 */
+        }
+        .novel-content p {
+            text-indent: 1em; /* 字下げ */
+            margin: 0.8em 0;
+        }
+        .novel-content p:first-of-type {
+            text-indent: 0; /* 最初の段落は字下げなし */
+        }
+        .episode-list {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 15px; /* 少し広げる */
+            margin-bottom: 25px; /* 少し広げる */
+        }
+        .episode-card {
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            padding: 12px; /* 少し調整 */
+            width: calc(33.33% - 10px); /* gap考慮 */
+            background-color: #f9f9f9;
+            cursor: pointer;
+            transition: all 0.2s;
+            box-sizing: border-box;
+        }
+        .episode-card:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+        }
+        .episode-card.active {
+            border: 2px solid #e91e63;
+            background-color: #fff0f5;
+        }
+        .episode-card h3 {
+            margin: 0 0 5px 0;
+            font-size: 15px; /* 少し調整 */
+            border: none;
+            padding: 0;
+            color: #e91e63;
+        }
+        .episode-card p {
+            margin: 0;
+            font-size: 12px; /* 少し小さく */
+            color: #666;
+        }
+        .controls {
+            display: flex;
+            gap: 15px;
+            margin-bottom: 30px;
+            flex-wrap: wrap;
+            align-items: center; /* ボタンの高さを揃える */
+        }
+        .btn { /* Bootstrap風ボタンクラス */
+            display: inline-block;
+            font-weight: 400;
+            line-height: 1.6;
+            color: #212529;
+            text-align: center;
             text-decoration: none;
-            display: block;
+            vertical-align: middle;
+            cursor: pointer;
+            user-select: none;
+            background-color: transparent;
+            border: 1px solid transparent;
+            padding: .375rem .75rem;
+            font-size: 1rem;
+            border-radius: .25rem;
+            transition: color .15s ease-in-out,background-color .15s ease-in-out,border-color .15s ease-in-out,box-shadow .15s ease-in-out;
         }
-        .story-history a:hover {
-            color: #0056b3;
+        .btn-primary { background-color: #e91e63; color: white; border-color: #e91e63; }
+        .btn-primary:hover { background-color: #c2185b; border-color: #c2185b; }
+        .btn-secondary { background-color: #6c757d; color: white; border-color: #6c757d; }
+        .btn-secondary:hover { background-color: #5a6268; border-color: #545b62; }
+        .btn-edit { background-color: #0d6efd; color: white; border-color: #0d6efd; } /* Blue */
+        .btn-edit:hover { background-color: #0b5ed7; border-color: #0a58ca; }
+        .btn-save { background-color: #198754; color: white; border-color: #198754; } /* Green */
+        .btn-save:hover { background-color: #157347; border-color: #146c43; }
+        .edit-container {
+            display: none;
+            margin-bottom: 30px;
         }
-        .current-episode {
-            background-color: #f0f8ff;
-            border-left: 3px solid #007bff;
-            padding-left: 10px;
+        .edit-container textarea {
+            width: 100%;
+            min-height: 400px;
+            padding: 15px;
+            font-size: 16px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            resize: vertical;
+            font-family: inherit;
+            line-height: 1.6;
+            margin-bottom: 15px; /* ボタンとの間隔 */
+            box-sizing: border-box;
+        }
+        .next-episode-form {
+            background-color: #f9f9f9;
+            padding: 25px; /* 少し広げる */
+            border-radius: 5px;
+            margin-top: 30px;
+            border: 1px solid #ddd;
+        }
+        .form-group { margin-bottom: 1.5rem; } /* Bootstrap風 */
+        .form-group label { display: block; margin-bottom: .5rem; font-weight: bold; color: #555; }
+        .form-control, .form-select { /* Bootstrap風 */
+             display: block; width: 100%; padding: .375rem .75rem; font-size: 1rem; font-weight: 400;
+             line-height: 1.6; color: #212529; background-color: #fff; background-clip: padding-box;
+             border: 1px solid #ced4da; appearance: none; border-radius: .25rem;
+             transition: border-color .15s ease-in-out,box-shadow .15s ease-in-out; box-sizing: border-box;
+        }
+        .tag-container { display: flex; flex-wrap: wrap; gap: 10px; margin-bottom: 15px; }
+        .tag {
+            background-color: #e9ecef; /* 色変更 */
+            border: 1px solid #ced4da; /* 色変更 */
+            border-radius: 15px;
+            padding: 6px 14px; /* 少し調整 */
+            font-size: 14px;
+            cursor: pointer;
+            transition: all 0.2s;
+            color: #495057; /* 文字色 */
+        }
+        .tag:hover { background-color: #dee2e6; border-color: #adb5bd;}
+        .tag.selected { background-color: #e91e63; color: white; border-color: #c2185b; }
+        .metadata { background-color: #f9f9f9; padding: 15px; border-radius: 5px; margin-bottom: 25px; font-size: 14px; color: #666; border: 1px solid #eee; }
+        .metadata strong { color: #333; margin-right: 5px;}
+        .metadata div { margin-bottom: 5px; } /* 各行の間隔 */
+        .spinner { display: none; width: 30px; height: 30px; border: 3px solid #f3f3f3; border-top: 3px solid #e91e63; border-radius: 50%; animation: spin 1s linear infinite; }
+        .alert { /* index.html と同じ */
+             position: relative; padding: 1rem 1rem; margin-bottom: 1rem; border: 1px solid transparent; border-radius: .25rem;
+        }
+        .alert-dismissible { padding-right: 3rem; }
+        .btn-close { /* index.html と同じ */
+             box-sizing: content-box; width: 1em; height: 1em; padding: .25em .25em; color: #000; background: transparent url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16' fill='%23000'%3e%3cpath d='M.293.293a1 1 0 0 1 1.414 0L8 6.586 14.293.293a1 1 0 1 1 1.414 1.414L9.414 8l6.293 6.293a1 1 0 0 1-1.414 1.414L8 9.414l-6.293 6.293a1 1 0 0 1-1.414-1.414L6.586 8 .293 1.707a1 1 0 0 1 0-1.414z'/%3e%3c/svg%3e") center/1em auto no-repeat; border: 0; border-radius: .25rem; opacity: .5; cursor: pointer;
+        }
+        .alert-dismissible .btn-close { position: absolute; top: 0; right: 0; z-index: 2; padding: 1.25rem 1rem; }
+        .fade { transition: opacity .15s linear; }
+        .show { opacity: 1; }
+        .alert-success { color: #0f5132; background-color: #d1e7dd; border-color: #badbcc; }
+        .alert-danger { color: #842029; background-color: #f8d7da; border-color: #f5c2c7; }
+        .alert-info { color: #055160; background-color: #cff4fc; border-color: #b6effb; }
+
+        .progress-bar { /* index.html と同じ */
+             width: 100%; height: 10px; background-color: #e9ecef; border-radius: 5px; margin: 15px 0 5px 0; overflow: hidden; display: none;
+        }
+        .progress-bar-inner { height: 100%; background-color: #e91e63; width: 0%; transition: width 0.3s ease-out; }
+        .status-message { /* index.html と同じ */
+             font-size: 14px; color: #6c757d; margin: 5px 0 15px 0; text-align: center; display: none; min-height: 1.2em;
+        }
+        .modal { /* index.html と同じだが display: flex; を追加 */
+            display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background-color: rgba(0,0,0,0.5); z-index: 1050; justify-content: center; align-items: center;
+        }
+        .modal-content { background-color: white; padding: 30px; border-radius: 8px; width: 90%; max-width: 600px; max-height: 80vh; overflow-y: auto; box-shadow: 0 5px 15px rgba(0,0,0,0.3); }
+        .modal-header { display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid #dee2e6; padding-bottom: 1rem; margin-bottom: 1rem; }
+        .modal-title { margin: 0; font-size: 1.25rem; color: #333; border: none; padding: 0;}
+        .modal-close { background: none; border: none; font-size: 1.5rem; cursor: pointer; color: #6c757d; padding: 0; line-height: 1;}
+        .modal-body { margin-bottom: 1rem; }
+        .modal-footer { display: flex; justify-content: flex-end; gap: .5rem; border-top: 1px solid #dee2e6; padding-top: 1rem; margin-top: 1rem; }
+        .style-option-container { margin-bottom: 1rem; }
+        .style-option { display: flex; align-items: center; gap: 10px; margin-bottom: 10px; padding: 10px; border: 1px solid #ddd; border-radius: 5px; background-color: white; cursor: pointer; transition: all 0.2s; }
+        .style-option:hover { background-color: #f8f9fa; }
+        .style-option.selected { border-color: #e91e63; background-color: #fff0f5; }
+        .style-option-info { flex: 1; }
+        .style-option h4 { margin: 0 0 5px 0; color: #e91e63; font-size: 1rem; }
+        .style-option p { margin: 0; font-size: 0.9rem; color: #666; }
+
+        footer { text-align: center; margin-top: 40px; padding-top: 20px; border-top: 1px solid #dee2e6; color: #6c757d; font-size: 14px; }
+        @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
+        @media (max-width: 768px) {
+            .episode-card { width: calc(50% - 8px); } /* gap考慮 */
+            .controls { flex-direction: column; gap: 10px; align-items: stretch; } /* stretchで幅を揃える */
+            .btn { width: 100%; }
+            .container { padding: 15px; }
+            .novel-content { font-size: 16px; padding: 15px; }
+            .modal-content { width: 95%; }
+        }
+        @media (max-width: 480px) {
+            .episode-card { width: 100%; }
         }
     </style>
 </head>
-<body class="{{ 'serif-font' if font_choice == 'serif' else '' }}">
+<body>
     <div class="container">
-        <h1>小説生成ツール</h1>
-        
-        <div class="episode-title">
-            第{{ story_list|length }}話
+        <h1>官能小説生成結果</h1>
+
+        <!-- 通知エリア -->
+        <div id="alert-container" style="position: fixed; top: 20px; right: 20px; z-index: 1050; width: 300px;"></div>
+
+        <!-- メタデータ表示 -->
+        <div class="metadata">
+            <div><strong>使用モデル:</strong> <span id="model-info">{{ model_choice or 'N/A' }}</span></div>
+            <div><strong>全体文体:</strong> <span id="style-info">{{ writing_style or 'N/A' }}</span></div>
+            <div><strong>淫語レベル:</strong> <span id="explicit-level">{{ explicit_level or 'N/A' }}%</span></div>
+            <div><strong>詳細度:</strong> <span id="detail-level">{{ detail_level or 'N/A' }}%</span></div>
+            <div><strong>心理描写:</strong> <span id="psychological-level">{{ psychological_level or 'N/A' }}%</span></div>
         </div>
-        
-        <div class="novel-content">{{ novel | safe }}</div>
-        
-        <div>
-            <a href="/continue_story" class="continue-button">次の話を執筆</a>
-            <a href="/" class="back-link">トップに戻る</a>
+
+        <!-- エピソードリスト -->
+        <h2>エピソード一覧</h2>
+        <div class="episode-list" id="episode-list">
+            {% for episode in episodes %}
+            <div class="episode-card {% if episode.number == current_episode %}active{% endif %}"
+                 data-episode-number="{{ episode.number }}">
+                <h3>第{{ episode.number }}話</h3>
+                <p>{{ episode.timestamp }}</p>
+                <p>文体: {{ episode.style }}</p>
+            </div>
+            {% else %}
+            <p>まだエピソードがありません。</p>
+            {% endfor %}
         </div>
-        
-        <div class="story-history">
-            <h2>エピソード一覧</h2>
-            <ul>
-                {% for story in story_list %}
-                    <li {% if loop.index == story_list|length %}class="current-episode"{% endif %}>
-                        <a href="/story/{{ loop.index0 }}">第{{ loop.index }}話: {{ story.summary }}</a>
-                    </li>
-                {% endfor %}
-            </ul>
+
+        <!-- 操作ボタン -->
+        <div class="controls">
+            <button type="button" class="btn btn-secondary" id="restart-btn">最初から作り直す</button>
+            <button type="button" class="btn btn-edit" id="edit-btn">現在のエピソードを編集</button>
+            <button type="button" class="btn btn-save" id="save-prompt-btn">設定を保存</button>
+            <button type="button" class="btn btn-primary" id="download-btn">テキストでダウンロード</button>
         </div>
+
+        <!-- 現在のエピソード表示 -->
+        <h2>第{{ current_episode or '?' }}話</h2>
+        <div class="novel-content" id="novel-content">
+            {% if novel %}
+                {{ novel|safe }} {# XSSに注意 #}
+            {% else %}
+                <p>エピソードの内容を読み込めませんでした。</p>
+            {% endif %}
+        </div>
+
+        <!-- 編集フォーム -->
+        <div class="edit-container" id="edit-container">
+            <textarea id="edit-text" class="form-control">{{ episodes[current_episode-1].text if episodes and current_episode and current_episode <= episodes|length else '' }}</textarea>
+            <div class="controls">
+                <button type="button" class="btn btn-secondary" id="cancel-edit-btn">キャンセル</button>
+                <button type="button" class="btn btn-primary" id="save-edit-btn">編集を保存</button>
+            </div>
+        </div>
+
+        <!-- 次話生成フォーム -->
+        <div class="next-episode-form" id="next-episode-form">
+            <h3>第{{ (current_episode or 0) + 1 }}話の生成設定</h3>
+
+            <form id="next-episode" action="{{ url_for('novel.next_episode') }}" method="post">
+                <input type="hidden" name="current_episode" value="{{ current_episode or 0 }}">
+
+                <div class="form-group">
+                    <label for="episode_style">文体スタイル:</label>
+                    <select id="episode_style" name="episode_style" class="form-select">
+                        <option value="auto" selected>現在の文体 ({{ current_style or '村上龍風' }})</option>
+                        <option value="murakami_ryu_1">村上龍風: クール・都会的</option>
+                        <option value="murakami_ryu_2">村上龍風: 生々しい・リアル</option>
+                        <option value="murakami_ryu_3">村上龍風: 哲学的・内省的</option>
+                        <option value="dan_oniroku">団鬼六風</option>
+                        <!-- 他の文体オプション -->
+                    </select>
+                </div>
+
+                <div class="form-group">
+                    <label>次話の方向性 (複数選択可):</label>
+                    <div class="tag-container" id="direction-tags">
+                        <div class="tag" data-value="情事を深める">情事を深める</div>
+                        <div class="tag" data-value="関係性の変化">関係性の変化</div>
+                        <div class="tag" data-value="内面描写">内面描写</div>
+                        <div class="tag" data-value="葛藤">葛藤</div>
+                        <div class="tag" data-value="転換点">転換点</div>
+                        <div class="tag" data-value="場所の変化">場所の変化</div>
+                        <div class="tag" data-value="過去の回想">過去の回想</div>
+                        <div class="tag" data-value="激しさを増す">激しさを増す</div>
+                        <div class="tag" data-value="優しさを増す">優しさを増す</div>
+                        <div class="tag" data-value="第三者の介入">第三者の介入</div>
+                    </div>
+                    <input type="hidden" id="direction_tags" name="direction_tags" value="">
+                </div>
+
+                <div class="form-group">
+                    <label for="direction_request">具体的な方向性リクエスト (任意):</label>
+                    <textarea id="direction_request" name="direction_request" class="form-control" placeholder="例：二人の関係に気づく人物が登場する、意外な場所での情事"></textarea>
+                </div>
+
+                <div id="progress-bar" class="progress-bar">
+                    <div id="progress-bar-inner" class="progress-bar-inner"></div>
+                </div>
+                <div id="status-message" class="status-message"></div>
+
+                <button type="submit" class="btn btn-primary" id="generate-next-btn">次話を生成</button>
+                <div id="spinner" class="spinner" style="display: inline-block; vertical-align: middle; margin-left: 10px;"></div>
+            </form>
+        </div>
+
+        <!-- 保存オプションモーダル -->
+        <div id="save-modal" class="modal">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h3 class="modal-title">設定を保存</h3>
+                    <button type="button" class="modal-close" id="save-modal-close-btn">×</button>
+                </div>
+                <div class="modal-body">
+                    <div class="form-group">
+                        <label for="save-name">保存名:</label>
+                        <input type="text" id="save-name" class="form-control" placeholder="例：ホテルでの再会プロット">
+                    </div>
+                    <div class="form-group">
+                        <label>保存する内容:</label>
+                        <div class="style-option-container">
+                             <div class="style-option selected" data-save-type="settings-only">
+                                <div class="style-option-info">
+                                    <h4>設定のみ保存</h4><p>プロンプトや設定値を保存します。</p>
+                                </div>
+                            </div>
+                             <div class="style-option" data-save-type="full-novel">
+                                <div class="style-option-info">
+                                    <h4>小説全体を保存</h4><p>全エピソードを含む小説データを保存します。</p>
+                                </div>
+                            </div>
+                        </div>
+                        <input type="hidden" id="save-type" value="settings-only">
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" id="save-modal-cancel-btn">キャンセル</button>
+                    <button type="button" class="btn btn-primary" id="save-modal-confirm-btn">保存</button>
+                </div>
+            </div>
+        </div>
+
+        <footer>
+            <p>官能小説生成ツール © 2025</p>
+            <p><a href="{{ url_for('novel.home') }}" style="color: #e91e63; text-decoration: none;">ホームに戻る</a></p>
+        </footer>
     </div>
+
+    <script>
+        // --- Helper Functions (Spinner, Notification, Progress Bar) ---
+        // (index.htmlと同様の showSpinner, hideSpinner, showNotification, startProgressAnimation をここに記述)
+        function showSpinner(message = '') { /* ... 実装 ... */ }
+        function hideSpinner() { /* ... 実装 ... */ }
+        function showNotification(message, type = 'info', duration = 5000) { /* ... 実装 ... */ }
+        let progressInterval = null;
+        function startProgressAnimation() { /* ... 実装 ... */ }
+
+        // --- Tag Selection ---
+        function toggleTag(element) {
+             if (!element) return;
+             element.classList.toggle('selected');
+
+             const container = element.closest('.tag-container');
+             if (!container) return;
+
+             const targetFieldId = container.dataset.targetInput || 'direction_tags'; // コンテナにdata属性で指定
+             const targetInput = document.getElementById(targetFieldId);
+             if (!targetInput) return;
+
+             const selectedTags = Array.from(container.querySelectorAll('.tag.selected'))
+                 .map(tag => tag.dataset.value || tag.textContent.trim()) // data-value優先
+                 .join('、');
+             targetInput.value = selectedTags;
+        }
+
+        // --- Modal Control ---
+        function showModal(modalId) {
+            const modal = document.getElementById(modalId);
+            if (modal) modal.style.display = 'flex';
+        }
+        function closeModal(modalId) {
+            const modal = document.getElementById(modalId);
+            if (modal) modal.style.display = 'none';
+        }
+
+        // --- Edit Functionality ---
+        function toggleEdit() {
+            const editContainer = document.getElementById('edit-container');
+            const novelContent = document.getElementById('novel-content');
+            const editBtn = document.getElementById('edit-btn');
+            if (!editContainer || !novelContent || !editBtn) return;
+
+            const isEditing = editContainer.style.display === 'block';
+            editContainer.style.display = isEditing ? 'none' : 'block';
+            novelContent.style.display = isEditing ? 'block' : 'none';
+            editBtn.textContent = isEditing ? '現在のエピソードを編集' : '編集をキャンセル';
+            editBtn.classList.toggle('btn-edit');
+            editBtn.classList.toggle('btn-secondary');
+        }
+
+        async function saveEdit() {
+            const editTextarea = document.getElementById('edit-text');
+            const currentEpisodeNum = parseInt('{{ current_episode or 0 }}');
+            if (!editTextarea || currentEpisodeNum <= 0) return;
+
+            showSpinner('エピソードを保存中...');
+            try {
+                const response = await fetch('{{ url_for("novel.save_edited_episode") }}', {
+                    method: 'POST',
+                    headers: {'Content-Type': 'application/json'},
+                    body: JSON.stringify({
+                        episode_number: currentEpisodeNum,
+                        content: editTextarea.value
+                    })
+                });
+                if (!response.ok) throw new Error(`保存エラー: ${response.status}`);
+                const result = await response.json();
+
+                if (result.success) {
+                    document.getElementById('novel-content').innerHTML = result.html_content;
+                    // ここで episodes 配列も更新したい（JavaScript側で）
+                    toggleEdit(); // 編集モードを閉じる
+                    showNotification('エピソードを保存しました', 'success');
+                } else {
+                    throw new Error(result.error || '保存中にエラー発生');
+                }
+            } catch (error) {
+                console.error('編集保存エラー:', error);
+                showNotification(`保存失敗: ${error.message}`, 'danger');
+            } finally {
+                hideSpinner();
+            }
+        }
+
+        // --- Save Prompt Functionality ---
+        async function savePrompt() {
+            const saveNameInput = document.getElementById('save-name');
+            const saveTypeInput = document.getElementById('save-type');
+            if (!saveNameInput || !saveTypeInput) return;
+
+            const name = saveNameInput.value.trim();
+            if (!name) {
+                showNotification('保存名を入力してください', 'danger');
+                return;
+            }
+            const saveType = saveTypeInput.value;
+
+            showSpinner('設定を保存中...');
+            try {
+                // --- データを収集 ---
+                // Note: result.html に prompt, essential_settings などの元データがない場合が多い
+                // 本来はセッションから取得したデータを hidden input などに保持するか、
+                // /save_prompt API側でセッションから直接読むのが良い。
+                // ここでは仮にJinja変数から取得するが、不完全な可能性がある。
+                const dataToSave = {
+                    name: name,
+                    save_type: saveType,
+                    model_choice: '{{ model_choice or "xai" }}',
+                    writing_style: '{{ writing_style or "村上龍風" }}',
+                    explicit_level: '{{ explicit_level or "70" }}',
+                    detail_level: '{{ detail_level or "80" }}',
+                    psychological_level: '{{ psychological_level or "60" }}',
+                    // 元のプロンプトや設定は通常この画面にないので、空にするか別途取得が必要
+                    prompt: '{{ prompt | escape | replace("\n", "\\n") | replace("\r", "") if prompt else "" }}', // JavaScript向けにエスケープ
+                    essential_settings: '{{ essential_settings | escape | replace("\n", "\\n") | replace("\r", "") if essential_settings else "" }}',
+                    // characters: {{ characters|tojson if characters else [] }}, // 必要なら
+                    episodes: saveType === 'full-novel' ? {{ episodes|tojson if episodes else [] }} : []
+                };
+
+                const response = await fetch('{{ url_for("novel.save_prompt") }}', {
+                    method: 'POST',
+                    headers: {'Content-Type': 'application/json'},
+                    body: JSON.stringify(dataToSave)
+                });
+                if (!response.ok) throw new Error(`保存エラー: ${response.status}`);
+                const result = await response.json();
+
+                if (result.success) {
+                    closeModal('save-modal');
+                    showNotification(`「${name}」として保存しました`, 'success');
+                } else {
+                    throw new Error(result.error || '保存中にエラー発生');
+                }
+            } catch (error) {
+                console.error('設定保存エラー:', error);
+                showNotification(`保存失敗: ${error.message}`, 'danger');
+            } finally {
+                hideSpinner();
+            }
+        }
+
+        // --- Download Functionality ---
+        function sanitizeFilename(filename) {
+             // ファイル名に使えない文字を除去または置換
+             return filename.replace(/[\/\\?%*:|"<>]/g, '_').replace(/\s+/g, '_');
+        }
+
+        function downloadNovel() {
+            try {
+                const episodesData = {{ episodes|tojson if episodes else [] }};
+                if (!episodesData || episodesData.length === 0) {
+                     showNotification('ダウンロードするエピソードがありません', 'info');
+                     return;
+                }
+
+                let novelText = `【官能小説生成ツール】\n============================================\n\n`;
+                novelText += `使用モデル: {{ model_choice or 'N/A' }}\n`;
+                novelText += `全体文体: {{ writing_style or 'N/A' }}\n`;
+                novelText += `淫語レベル: {{ explicit_level or 'N/A' }}%\n`;
+                novelText += `詳細度: {{ detail_level or 'N/A' }}%\n`;
+                novelText += `心理描写: {{ psychological_level or 'N/A' }}%\n\n`;
+                novelText += `============================================\n\n`;
+
+                episodesData.forEach(episode => {
+                    novelText += `■ 第${episode.number}話 (${episode.timestamp})\n`;
+                    novelText += `文体: ${episode.style || 'N/A'}\n\n`;
+                    novelText += `${episode.text || '(本文なし)'}\n\n`;
+                    novelText += `--------------------------------------------\n\n`;
+                });
+
+                const blob = new Blob([novelText], { type: 'text/plain;charset=utf-8' });
+                const url = URL.createObjectURL(blob);
+                const a = document.createElement('a');
+                a.href = url;
+                const timestamp = new Date().toISOString().replace(/[:.]/g, '-');
+                // ファイル名をサニタイズ
+                const filenameBase = sanitizeFilename(`官能小説_${timestamp}`);
+                a.download = `${filenameBase}.txt`;
+                document.body.appendChild(a);
+                a.click();
+                setTimeout(() => {
+                    document.body.removeChild(a);
+                    URL.revokeObjectURL(url);
+                }, 100);
+                showNotification('小説をテキストファイルとしてダウンロードしました', 'success');
+            } catch (error) {
+                console.error('ダウンロードエラー:', error);
+                showNotification(`ダウンロード失敗: ${error.message}`, 'danger');
+            }
+        }
+
+        // --- Event Listeners ---
+        document.addEventListener('DOMContentLoaded', function() {
+            // エピソードカードクリック
+            document.querySelectorAll('.episode-card').forEach(card => {
+                card.addEventListener('click', function() {
+                    const episodeNum = this.dataset.episodeNumber;
+                    if (episodeNum) {
+                        window.location.href = `{{ url_for('novel.view_episode', episode_num=0) }}`.replace('0', episodeNum);
+                    }
+                });
+            });
+
+            // 操作ボタン
+            document.getElementById('restart-btn')?.addEventListener('click', () => window.location.href = '{{ url_for('novel.home') }}');
+            document.getElementById('edit-btn')?.addEventListener('click', toggleEdit);
+            document.getElementById('save-prompt-btn')?.addEventListener('click', () => showModal('save-modal'));
+            document.getElementById('download-btn')?.addEventListener('click', downloadNovel);
+
+            // 編集フォームボタン
+            document.getElementById('cancel-edit-btn')?.addEventListener('click', toggleEdit); // キャンセルもトグルでOK
+            document.getElementById('save-edit-btn')?.addEventListener('click', saveEdit);
+
+            // 次話生成フォーム送信
+            const nextEpisodeForm = document.getElementById('next-episode');
+            if (nextEpisodeForm) {
+                nextEpisodeForm.addEventListener('submit', function(event) {
+                    // event.preventDefault(); // 必要なら非同期処理の前に追加
+                    showSpinner('次のエピソードを生成中... (最大2分程度)');
+                    const submitBtn = document.getElementById('generate-next-btn');
+                    if (submitBtn) submitBtn.disabled = true;
+                    startProgressAnimation();
+                    // return true; // 通常のフォーム送信を許可
+                });
+            }
+
+            // 次話の方向性タグ
+            const directionTagsContainer = document.getElementById('direction-tags');
+             if (directionTagsContainer) {
+                 // data-target-input 属性で hidden input の ID を指定
+                 directionTagsContainer.dataset.targetInput = 'direction_tags';
+                 directionTagsContainer.querySelectorAll('.tag').forEach(tag => {
+                     tag.addEventListener('click', function() {
+                         toggleTag(this);
+                     });
+                 });
+             }
+
+            // 保存モーダル関連
+            document.getElementById('save-modal-close-btn')?.addEventListener('click', () => closeModal('save-modal'));
+            document.getElementById('save-modal-cancel-btn')?.addEventListener('click', () => closeModal('save-modal'));
+            document.getElementById('save-modal-confirm-btn')?.addEventListener('click', savePrompt);
+            document.querySelectorAll('.style-option').forEach(option => {
+                 option.addEventListener('click', function() {
+                     document.querySelectorAll('.style-option').forEach(opt => opt.classList.remove('selected'));
+                     this.classList.add('selected');
+                     const saveTypeInput = document.getElementById('save-type');
+                     if (saveTypeInput) saveTypeInput.value = this.dataset.saveType || 'settings-only';
+                 });
+            });
+
+            // モーダル外クリックで閉じる
+            document.querySelectorAll('.modal').forEach(modal => {
+                modal.addEventListener('click', function(event) {
+                    if (event.target === modal) closeModal(modal.id);
+                });
+            });
+            // ESCキーでモーダルを閉じる
+            document.addEventListener('keydown', function(event) {
+                 if (event.key === 'Escape') {
+                     document.querySelectorAll('.modal').forEach(modal => closeModal(modal.id));
+                 }
+            });
+
+            // 通知の初期表示（Flaskから渡された場合）
+            {% if notification %}
+                showNotification('{{ notification.message }}', '{{ notification.type }}');
+            {% endif %}
+        });
+
+        // --- Helper Function Implementations (Placeholder) ---
+        // (showSpinner, hideSpinner, showNotification, startProgressAnimation の実装をここに記述)
+        function showSpinner(message = '') {
+            const spinner = document.getElementById('spinner');
+            const statusMsg = document.getElementById('status-message');
+            if (spinner) spinner.style.display = 'inline-block'; // inline-blockに変更
+            if (statusMsg) {
+                 statusMsg.textContent = message || '処理中...';
+                 statusMsg.style.display = 'block';
+            }
+            // Disable relevant buttons
+            document.getElementById('generate-next-btn')?.setAttribute('disabled', 'true');
+        }
+
+        function hideSpinner() {
+            const spinner = document.getElementById('spinner');
+            const statusMsg = document.getElementById('status-message');
+            const progressBar = document.getElementById('progress-bar');
+            if (spinner) spinner.style.display = 'none';
+            if (statusMsg) statusMsg.style.display = 'none';
+            if (progressBar) progressBar.style.display = 'none';
+             // Enable buttons
+            document.getElementById('generate-next-btn')?.removeAttribute('disabled');
+
+            if (progressInterval) { clearInterval(progressInterval); progressInterval = null; }
+        }
+
+        function showNotification(message, type = 'info', duration = 5000) {
+            const alertContainer = document.getElementById('alert-container');
+            if (!alertContainer) return;
+            const alert = document.createElement('div');
+            alert.className = `alert alert-${type} alert-dismissible fade show`;
+            alert.setAttribute('role', 'alert');
+            alert.style.opacity = '1';
+            alert.style.transition = 'opacity 0.5s ease-out';
+            alert.innerHTML = `${message}<button type="button" class="btn-close" aria-label="Close"></button>`;
+            alertContainer.prepend(alert);
+            const closeButton = alert.querySelector('.btn-close');
+            const removeAlert = () => {
+                 alert.style.opacity = '0';
+                 setTimeout(() => { if (alert.parentNode === alertContainer) alertContainer.removeChild(alert); }, 500);
+            };
+            if (closeButton) closeButton.onclick = removeAlert;
+            if (duration > 0) setTimeout(removeAlert, duration);
+        }
+
+        function startProgressAnimation() {
+            const progressBar = document.getElementById('progress-bar');
+            const progressBarInner = document.getElementById('progress-bar-inner');
+            const statusMessage = document.getElementById('status-message');
+            if (!progressBar || !progressBarInner || !statusMessage) return;
+            const messages = [ /* ... メッセージ配列 ... */
+                '次話の構想を練っています...', 'キャラクターの動きを生成中...', '描写を調整しています...', '最終チェック中...'
+            ];
+            progressBar.style.display = 'block';
+            statusMessage.style.display = 'block';
+            progressBarInner.style.width = `0%`;
+            let progress = 0, messageIndex = 0;
+            statusMessage.textContent = messages[messageIndex];
+            if (progressInterval) clearInterval(progressInterval);
+            progressInterval = setInterval(() => {
+                progress += Math.random() * 5 + 2;
+                if (progress > 98) progress = 98;
+                progressBarInner.style.width = `${progress}%`;
+                const newMessageIndex = Math.min(Math.floor(progress / (100 / messages.length)), messages.length - 1);
+                if (newMessageIndex > messageIndex) { messageIndex = newMessageIndex; statusMessage.textContent = messages[messageIndex]; }
+            }, 400);
+        }
+    </script>
 </body>
 </html>

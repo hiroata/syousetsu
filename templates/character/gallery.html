@@ -1,0 +1,133 @@
+{% extends "layout.html" %}
+{% block title %}キャラクターギャラリー{% endblock %}
+
+{% block content %}
+<div class="container">
+    <h1 class="mb-4">キャラクターギャラリー</h1>
+    
+    <div class="row mb-4">
+        <div class="col">
+            <a href="/" class="btn btn-secondary">ホームに戻る</a>
+            <a href="/characters/create" class="btn btn-primary">新規キャラクター作成</a>
+        </div>
+    </div>
+    
+    {% with messages = get_flashed_messages(with_categories=true) %}
+        {% if messages %}
+            {% for category, message in messages %}
+                <div class="alert alert-{{ category }}">{{ message }}</div>
+            {% endfor %}
+        {% endif %}
+    {% endwith %}
+    
+    {% if characters %}
+        <div class="row row-cols-1 row-cols-md-3 g-4">
+            {% for character in characters %}
+                <div class="col">
+                    <div class="card h-100">
+                        <div class="card-header">
+                            <h5 class="card-title">{{ character.name }}</h5>
+                            <h6 class="card-subtitle mb-2 text-muted">
+                                {% if character.gender == 'female' %}女性{% else %}男性{% endif %}, {{ character.age }}歳
+                            </h6>
+                        </div>
+                        <div class="card-body">
+                            {% if character.occupation %}
+                                <p><strong>職業:</strong> {{ character.occupation }}</p>
+                            {% endif %}
+                            
+                            {% if character.appearance %}
+                                <p><strong>外見:</strong> {{ character.appearance }}</p>
+                            {% endif %}
+                            
+                            {% if character.personality %}
+                                <p><strong>性格:</strong> {{ character.personality }}</p>
+                            {% endif %}
+                            
+                            {% if character.speech_pattern %}
+                                <p><strong>話し方:</strong> {{ character.speech_pattern }}</p>
+                            {% endif %}
+                            
+                            {% if character.kinks %}
+                                <p><strong>性癖:</strong> {{ character.kinks }}</p>
+                            {% endif %}
+                            
+                            {% if character.tags %}
+                                <div class="mt-2">
+                                    {% for tag in character.tags.split(',') %}
+                                        <span class="badge bg-secondary">{{ tag.strip() }}</span>
+                                    {% endfor %}
+                                </div>
+                            {% endif %}
+                        </div>
+                        <div class="card-footer">
+                            <div class="btn-group" role="group">
+                                <a href="/characters/edit/{{ character.id }}" class="btn btn-sm btn-outline-primary">編集</a>
+                                <button type="button" class="btn btn-sm btn-outline-danger" 
+                                        onclick="confirmDelete({{ character.id }}, '{{ character.name }}')">
+                                    削除
+                                </button>
+                                <button type="button" class="btn btn-sm btn-outline-success"
+                                        onclick="useCharacter({{ character.id }})">
+                                    使用する
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            {% endfor %}
+        </div>
+    {% else %}
+        <div class="alert alert-info">
+            登録されたキャラクターがありません。「新規キャラクター作成」ボタンから作成してください。
+        </div>
+    {% endif %}
+    
+    <!-- 削除確認モーダル -->
+    <div class="modal fade" id="deleteModal" tabindex="-1" aria-labelledby="deleteModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="deleteModalLabel">キャラクター削除確認</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body" id="deleteModalBody">
+                    このキャラクターを削除しますか？
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">キャンセル</button>
+                    <form id="deleteForm" method="POST">
+                        <button type="submit" class="btn btn-danger">削除する</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    function confirmDelete(characterId, characterName) {
+        document.getElementById('deleteModalBody').textContent = `「${characterName}」を削除しますか？この操作は元に戻せません。`;
+        document.getElementById('deleteForm').action = `/characters/delete/${characterId}`;
+        
+        const deleteModal = new bootstrap.Modal(document.getElementById('deleteModal'));
+        deleteModal.show();
+    }
+    
+    function useCharacter(characterId) {
+        // キャラクターを小説生成に使用するためのリダイレクト
+        fetch(`/api/characters/${characterId}`)
+            .then(response => response.json())
+            .then(data => {
+                // セッションストレージに保存
+                sessionStorage.setItem('selected_character', JSON.stringify(data));
+                // インデックスページに戻る
+                window.location.href = '/?use_character=true';
+            })
+            .catch(error => {
+                console.error('Error fetching character:', error);
+                alert('キャラクター情報の取得に失敗しました。');
+            });
+    }
+</script>
+{% endblock %}
