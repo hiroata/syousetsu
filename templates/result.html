@@ -26,6 +26,34 @@
             font-weight: bold;
             margin-bottom: 10px;
         }
+        .model-badge {
+            display: inline-block;
+            font-size: 12px;
+            padding: 3px 8px;
+            border-radius: 10px;
+            background-color: #e0e0e0;
+            margin-left: 10px;
+        }
+        .model-badge.xai {
+            background-color: #f0f8ff;
+            color: #0066cc;
+            border: 1px solid #99ccff;
+        }
+        .model-badge.gemini {
+            background-color: #f0fff0;
+            color: #009900;
+            border: 1px solid #99cc99;
+        }
+        .model-badge.anthropic {
+            background-color: #fff0f0;
+            color: #cc0000;
+            border: 1px solid #ffcccc;
+        }
+        .model-badge.openai {
+            background-color: #f8f8f8;
+            color: #333333;
+            border: 1px solid #cccccc;
+        }
         .novel-content { 
             padding: 20px; 
             border: 1px solid #ddd; 
@@ -102,6 +130,19 @@
         
         <div class="episode-title">
             第{{ story_list|length }}話
+            {% if model_choice %}
+                <span class="model-badge {{ model_choice }}">
+                    {% if model_choice == 'xai' %}
+                        Grok-3
+                    {% elif model_choice == 'gemini' %}
+                        Gemini 2.5
+                    {% elif model_choice == 'anthropic' %}
+                        Claude 3.5
+                    {% elif model_choice == 'openai' %}
+                        GPT-4
+                    {% endif %}
+                </span>
+            {% endif %}
         </div>
         
         <div class="novel-content">{{ novel | safe }}</div>
@@ -116,7 +157,22 @@
             <ul>
                 {% for story in story_list %}
                     <li {% if loop.index == story_list|length %}class="current-episode"{% endif %}>
-                        <a href="/story/{{ loop.index0 }}">第{{ loop.index }}話: {{ story.summary }}</a>
+                        <a href="/story/{{ loop.index0 }}">
+                            第{{ loop.index }}話: {{ story.summary }}
+                            {% if story.model %}
+                                <span class="model-badge {{ story.model }}">
+                                    {% if story.model == 'xai' %}
+                                        Grok-3
+                                    {% elif story.model == 'gemini' %}
+                                        Gemini 2.5
+                                    {% elif story.model == 'anthropic' %}
+                                        Claude 3.5
+                                    {% elif story.model == 'openai' %}
+                                        GPT-4
+                                    {% endif %}
+                                </span>
+                            {% endif %}
+                        </a>
                     </li>
                 {% endfor %}
             </ul>

@@ -106,6 +106,32 @@
             animation: spin 1s linear infinite;
             margin: 10px auto;
         }
+        .model-option {
+            display: flex;
+            align-items: center;
+            margin-bottom: 5px;
+        }
+        .model-description {
+            margin-left: 10px;
+            font-size: 14px;
+            color: #666;
+        }
+        .model-features {
+            font-size: 12px;
+            color: #888;
+            margin-top: 2px;
+        }
+        .model-group {
+            border: 1px solid #eee;
+            padding: 10px;
+            border-radius: 5px;
+            margin-bottom: 15px;
+        }
+        .model-group h3 {
+            margin-top: 0;
+            font-size: 16px;
+            color: #444;
+        }
         @keyframes spin {
             0% { transform: rotate(0deg); }
             100% { transform: rotate(360deg); }
@@ -114,6 +140,7 @@
     <script>
         function generateIdeas() {
             const genre = document.getElementById('genre').value;
+            const modelChoice = document.getElementById('model_choice').value;
             const spinner = document.getElementById('spinner');
             const ideasContainer = document.getElementById('ideas-container');
             
@@ -127,7 +154,7 @@
                 headers: {
                     'Content-Type': 'application/x-www-form-urlencoded',
                 },
-                body: `genre=${encodeURIComponent(genre)}`
+                body: `genre=${encodeURIComponent(genre)}&model_choice=${encodeURIComponent(modelChoice)}`
             })
             .then(response => response.json())
             .then(data => {
@@ -206,14 +233,45 @@
             </select>
 
             <label for="model_choice">使用するAIモデル:</label>
-            <select id="model_choice" name="model_choice">
-                <option value="openrouter">OpenRouter (GPT-3.5-Turbo)</option>
-                <option value="openai">OpenAI (GPT-4)</option>
-                <option value="gemini">Google Gemini</option>
-                <option value="deepseek">DeepSeek</option>
-                <option value="anthropic">Anthropic (Claude 3.5)</option>
-                <option value="xai">xAI (Grok-2)</option>
-            </select>
+            <div class="model-group">
+                <h3>xAI</h3>
+                <div class="model-option">
+                    <input type="radio" id="model_xai" name="model_choice" value="xai" checked>
+                    <label for="model_xai" class="model-description">
+                        Grok-3 (Beta)
+                        <div class="model-features">最新モデル・13万トークンコンテキスト・高度な推論能力</div>
+                    </label>
+                </div>
+            </div>
+            
+            <div class="model-group">
+                <h3>Google</h3>
+                <div class="model-option">
+                    <input type="radio" id="model_gemini" name="model_choice" value="gemini">
+                    <label for="model_gemini" class="model-description">
+                        Gemini 2.5 Pro
+                        <div class="model-features">104万トークンコンテキスト・画像理解・思考機能搭載</div>
+                    </label>
+                </div>
+            </div>
+            
+            <div class="model-group">
+                <h3>その他</h3>
+                <div class="model-option">
+                    <input type="radio" id="model_anthropic" name="model_choice" value="anthropic">
+                    <label for="model_anthropic" class="model-description">
+                        Claude 3.5 Sonnet
+                        <div class="model-features">高品質テキスト生成・安全性・創造性のバランス</div>
+                    </label>
+                </div>
+                <div class="model-option">
+                    <input type="radio" id="model_openai" name="model_choice" value="openai">
+                    <label for="model_openai" class="model-description">
+                        GPT-4 Turbo
+                        <div class="model-features">高い応答精度・広範な知識ベース</div>
+                    </label>
+                </div>
+            </div>
             
             <div class="idea-generator">
                 <h3>アイデアが思いつかない？</h3>
