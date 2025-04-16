@@ -1,0 +1,392 @@
+/* style.css - 小説生成ツール共通スタイル */
+
+/* 基本スタイル */
+body { 
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+    line-height: 1.6; 
+    margin: 0; 
+    padding: 20px; 
+    background-color: #f0f2f5; 
+}
+
+.container { 
+    max-width: 800px; 
+    margin: 0 auto; 
+    background-color: white; 
+    padding: 30px; 
+    border-radius: 8px; 
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1); 
+}
+
+h1 { 
+    color: #333; 
+    text-align: center; 
+    border-bottom: 2px solid #007bff; 
+    padding-bottom: 10px; 
+    margin-bottom: 30px; 
+}
+
+h2 {
+    color: #444;
+    margin-top: 1.5em;
+    margin-bottom: 0.75em;
+}
+
+h3 {
+    color: #555;
+    margin-top: 1em;
+    margin-bottom: 0.5em;
+}
+
+/* フォーム要素 */
+label { 
+    font-weight: bold; 
+    color: #555; 
+    display: block; 
+    margin-bottom: 5px; 
+}
+
+input[type="text"], 
+textarea, 
+select { 
+    width: 100%; 
+    padding: 10px; 
+    margin-bottom: 20px; 
+    border: 1px solid #ddd; 
+    border-radius: 5px; 
+    box-sizing: border-box; 
+    font-size: 16px; 
+}
+
+textarea { 
+    resize: vertical; 
+    min-height: 150px; 
+}
+
+button, 
+input[type="button"], 
+input[type="submit"],
+.button { 
+    background-color: #007bff; 
+    color: white; 
+    padding: 12px 20px; 
+    border: none; 
+    border-radius: 5px; 
+    cursor: pointer; 
+    font-size: 16px; 
+    transition: background-color 0.3s;
+}
+
+button:hover, 
+input[type="button"]:hover, 
+input[type="submit"]:hover,
+.button:hover { 
+    background-color: #0056b3; 
+}
+
+button:disabled,
+input[type="button"]:disabled,
+input[type="submit"]:disabled,
+.button:disabled {
+    background-color: #cccccc;
+    cursor: not-allowed;
+}
+
+/* キャラクターフォーム */
+.character-form { 
+    margin-top: 20px; 
+    padding: 15px; 
+    border: 1px solid #ddd; 
+    border-radius: 5px;
+    background-color: #f9f9f9;
+}
+
+.character-form h3 {
+    margin-top: 0;
+    color: #444;
+}
+
+/* アイデア生成セクション */
+.idea-generator {
+    margin-bottom: 20px;
+    padding: 15px;
+    border: 1px solid #ddd;
+    border-radius: 5px;
+    background-color: #f0f8ff;
+}
+
+.ideas-container {
+    display: none;
+    margin-top: 15px;
+    padding: 10px;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    background-color: #fff;
+    max-height: 400px;
+    overflow-y: auto;
+}
+
+.idea-item {
+    margin-bottom: 10px;
+    padding-bottom: 10px;
+    border-bottom: 1px solid #eee;
+}
+
+.idea-select {
+    background-color: #28a745;
+    margin-top: 5px;
+    padding: 5px 10px;
+    font-size: 14px;
+}
+
+.idea-select:hover {
+    background-color: #218838;
+}
+
+/* ロード表示 */
+.spinner {
+    display: none;
+    width: 30px;
+    height: 30px;
+    border: 3px solid #f3f3f3;
+    border-top: 3px solid #3498db;
+    border-radius: 50%;
+    animation: spin 1s linear infinite;
+    margin: 10px auto;
+}
+
+@keyframes spin {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+}
+
+/* モデル選択オプション */
+.model-option {
+    display: flex;
+    align-items: center;
+    margin-bottom: 5px;
+}
+
+.model-description {
+    margin-left: 10px;
+    font-size: 14px;
+    color: #666;
+}
+
+.model-features {
+    font-size: 12px;
+    color: #888;
+    margin-top: 2px;
+}
+
+.model-group {
+    border: 1px solid #eee;
+    padding: 10px;
+    border-radius: 5px;
+    margin-bottom: 15px;
+}
+
+.model-group h3 {
+    margin-top: 0;
+    font-size: 16px;
+    color: #444;
+}
+
+/* 結果表示ページ用スタイル */
+.episode-title {
+    font-size: 20px;
+    font-weight: bold;
+    margin-bottom: 10px;
+}
+
+.model-badge {
+    display: inline-block;
+    font-size: 12px;
+    padding: 3px 8px;
+    border-radius: 10px;
+    background-color: #e0e0e0;
+    margin-left: 10px;
+}
+
+.model-badge.xai {
+    background-color: #f0f8ff;
+    color: #0066cc;
+    border: 1px solid #99ccff;
+}
+
+.model-badge.gemini {
+    background-color: #f0fff0;
+    color: #009900;
+    border: 1px solid #99cc99;
+}
+
+.model-badge.anthropic {
+    background-color: #fff0f0;
+    color: #cc0000;
+    border: 1px solid #ffcccc;
+}
+
+.model-badge.openai {
+    background-color: #f8f8f8;
+    color: #333333;
+    border: 1px solid #cccccc;
+}
+
+.novel-content { 
+    padding: 20px; 
+    border: 1px solid #ddd; 
+    border-radius: 5px; 
+    background-color: #fafafa; 
+    margin-bottom: 20px;
+    line-height: 1.8;
+    max-height: 500px;
+    overflow-y: auto;
+}
+
+.serif-font .novel-content {
+    font-family: Georgia, "Times New Roman", "Hiragino Mincho ProN", "Yu Mincho", serif;
+}
+
+.continue-button { 
+    background-color: #28a745; 
+    color: white; 
+    padding: 12px 24px; 
+    border-radius: 5px; 
+    border: none; 
+    cursor: pointer;
+    text-decoration: none;
+    display: inline-block;
+    transition: background-color 0.3s;
+}
+
+.continue-button:hover {
+    background-color: #218838;
+}
+
+.back-link {
+    color: #007bff;
+    text-decoration: none;
+    margin-left: 10px;
+    display: inline-block;
+}
+
+.back-link:hover {
+    text-decoration: underline;
+}
+
+.action-buttons {
+    margin: 20px 0;
+}
+
+/* ストーリー履歴 */
+.story-history { 
+    margin-top: 30px; 
+    padding: 15px; 
+    border: 1px solid #ddd; 
+    border-radius: 5px; 
+    background-color: #f9f9f9; 
+}
+
+.story-history ul {
+    list-style-type: none;
+    padding: 0;
+    margin: 0;
+}
+
+.story-history li {
+    padding: 8px 0;
+    border-bottom: 1px solid #eee;
+}
+
+.story-history li:last-child {
+    border-bottom: none;
+}
+
+.story-history a {
+    color: #007bff;
+    text-decoration: none;
+    display: block;
+}
+
+.story-history a:hover {
+    color: #0056b3;
+}
+
+.current-episode {
+    background-color: #f0f8ff;
+    border-left: 3px solid #007bff;
+    padding-left: 10px;
+}
+
+/* モーダル */
+.modal {
+    display: none;
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.5);
+    justify-content: center;
+    align-items: center;
+    z-index: 1000;
+}
+
+.modal-content {
+    background-color: white;
+    padding: 30px;
+    border-radius: 8px;
+    text-align: center;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.2);
+    max-width: 400px;
+    width: 90%;
+}
+
+.modal p {
+    margin-top: 15px;
+    color: #555;
+}
+
+/* モバイル対応 */
+@media (max-width: 768px) {
+    .container {
+        padding: 20px 15px;
+    }
+    
+    h1 {
+        font-size: 24px;
+    }
+    
+    .novel-content {
+        padding: 15px;
+        max-height: 400px;
+    }
+    
+    .action-buttons {
+        display: flex;
+        flex-direction: column;
+    }
+    
+    .back-link {
+        margin-left: 0;
+        margin-top: 10px;
+        text-align: center;
+    }
+    
+    .continue-button {
+        width: 100%;
+        text-align: center;
+    }
+}
+
+/* デバッグモード表示 */
+.debug-mode {
+    position: fixed;
+    bottom: 10px;
+    right: 10px;
+    background-color: rgba(255, 0, 0, 0.1);
+    padding: 5px 10px;
+    border-radius: 5px;
+    font-size: 12px;
+    color: #cc0000;
+}

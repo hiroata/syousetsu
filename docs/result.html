@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>生成された小説</title>
+    <link rel="stylesheet" href="css/style.css">
+    <!-- Marked.jsの読み込み -->
+    <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
+</head>
+<body>
+    <div class="container">
+        <h1>小説生成ツール</h1>
+        
+        <div id="episode-container">
+            <div class="episode-title" id="episode-title">
+                ロード中...
+                <span id="model-badge" class="model-badge">モデル</span>
+            </div>
+            
+            <div id="novel-content" class="novel-content">
+                コンテンツをロード中...
+            </div>
+            
+            <div class="action-buttons">
+                <button id="continue-button" class="continue-button">次の話を執筆</button>
+                <a href="index.html" class="back-link">トップに戻る</a>
+            </div>
+        </div>
+        
+        <div class="story-history">
+            <h2>エピソード一覧</h2>
+            <ul id="episode-list">
+                <!-- エピソードリストがここに動的に追加されます -->
+            </ul>
+        </div>
+    </div>
+
+    <!-- 結果ページ用モーダル -->
+    <div id="loading-modal" class="modal">
+        <div class="modal-content">
+            <div class="spinner"></div>
+            <p>小説を生成中...</p>
+        </div>
+    </div>
+
+    <!-- APIクライアントライブラリ -->
+    <script src="js/api-client.js"></script>
+    <!-- ストーリー管理ライブラリ -->
+    <script src="js/story-manager.js"></script>
+    <!-- 結果ページ用スクリプト -->
+    <script src="js/result.js"></script>
+</body>
+</html>
